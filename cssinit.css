@@ -1,0 +1,39 @@
+body, form, input, textarea, select, ol, ul, h1, h2, h3, h4, h5, h6, p, th, td, dl, dd, fieldset, legend, figure, figcaption {
+    margin: 0;
+    padding: 0;
+}
+body {
+    background-color: #f1f1f1;
+}
+h1, h2, h3, h4, h5, h6, b, strong {
+    font-weight: normal;
+}
+i, em {
+    font-style: normal;
+}
+li {
+    list-style: none;
+}
+a {
+    text-decoration: none;
+    color: #10a37f;
+}
+input {
+    outline: none;
+}
+html, body, #app, .el-container {
+    width: 100%;
+    height: 100%;
+}
+.mask {
+   position: fixed;
+   top: 0;
+   right: 0;
+   bottom: 0;
+   left: 0;
+   background-color: rgba(221, 221, 221, 0.5);
+   z-index: 100;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+}
