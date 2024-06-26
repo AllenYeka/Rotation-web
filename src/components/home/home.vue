@@ -238,6 +238,16 @@ onMounted(() => {
 
 
 <style lang='less'>
+@keyframes slide-in-top {
+  0% {
+    transform: translateY(-1000px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
 .messageBox_cancel {
    &:hover {
       color: white;
@@ -259,6 +269,7 @@ onMounted(() => {
    padding-top: 60px;
    box-sizing: border-box;
    position: relative;
+   animation: slide-in-top 0.4s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
    .el-input {
       width: 80%;
       --el-input-focus-border-color: #10a37e;

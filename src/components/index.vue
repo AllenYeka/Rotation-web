@@ -9,32 +9,23 @@
       <el-container>
          <!-- 左侧菜单 -->
          <el-aside>
-            <el-menu active-text-color="lightgreen" background-color="#10a37ed8" text-color="#fff" router>
-               <!-- 首页 -->
-               <el-menu-item index="/home">
-                  <el-icon>
-                     <location />
-                  </el-icon>
-                  <p>首页</p>
-               </el-menu-item>
-               <!-- 发现 -->
-               <el-sub-menu>
+            <el-menu active-text-color="lightgreen" unique-opened background-color="#10a37ed8" text-color="#fff" router>
+               <el-sub-menu :index="item.menuItem.id" v-for="item of menuItemList" :key='item.menuItem.id'>
                   <template #title>
                      <el-icon>
-                        <Search />
+                        <component :is="item.menuItem.icon"></component>
                      </el-icon>
-                     <p>发现</p>
+                     <p>{{item.menuItem.menuItemName}}</p>
                   </template>
-                  <el-menu-item index="/findImg">图片</el-menu-item>
-                  <el-menu-item index="/findVideo">视频</el-menu-item>
+                  <el-menu-item :index="son.menuItem.route" v-for="son of item.sonItem" :key='son.menuItem.id'>
+                     <template #title>
+                        <el-icon>
+                           <Menu />
+                        </el-icon>
+                        <p>{{son.menuItem.menuItemName}}</p>
+                     </template>
+                  </el-menu-item>
                </el-sub-menu>
-               <!-- 我的 -->
-               <el-menu-item index="/usermsg">
-                  <el-icon>
-                     <User />
-                  </el-icon>
-                  <p>我的</p>
-               </el-menu-item>
             </el-menu>
          </el-aside>
          <!-- 路由占位符 -->
@@ -48,11 +39,17 @@
 
 <script setup>
 import { useRoute, useRouter } from "vue-router"
-import { provide, inject, onMounted, reactive } from 'vue'
+import { provide, inject, onMounted, reactive, onBeforeMount } from 'vue'
+import axios from 'axios'
 /* data */
 const route = useRoute()
 const router = useRouter()
+const baseURL = '/rotation/api/content/menu'
+let menuItemList = reactive([
+   { menuItem: { id: 0, menuItemName: '', parentId: 0, isLeaf: 0, route: '',icon:'' }, sonItem: [] },
+])
 let user = reactive(JSON.parse(localStorage.getItem('user')))
+
 
 /* method */
 function logout() {
@@ -60,6 +57,16 @@ function logout() {
    provide('removeToken', 'remove')
    location.href = 'http://localhost:5379/#/login'
 }
+async function menuList() {
+   const response = await axios.get(baseURL + '/menuList', { headers: { 'Authorization': localStorage.getItem('token') } })
+   for (let i = 0; i < response.data.length; i++)
+      menuItemList[i] = response.data[i]
+   //menuItemList = response.data无法渲染到界面
+}
+
+
+/* 钩子 */
+menuList()
 </script>
 
 
@@ -96,7 +103,7 @@ function logout() {
 }
 .el-aside {
    background-color: #10a37ee6;
-   width: 11%;
+   width: 10%;
 }
 .el-main {
    background-color: #e7f0e9;
