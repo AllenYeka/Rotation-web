@@ -17,11 +17,11 @@
             <hr>
             <h4>或</h4>
          </div>
-         <a class="oauthLogin" href="/gateway/oauth2/authorization/github">
+         <a class="oauthLogin" :href="github_oauth.getGithubCode">
             <img src="../assets/oauth/github.ico">
             <p>使用Github登录</p>
          </a>
-         <a class="oauthLogin" href="/gateway/oauth2/authorization/gitee">
+         <a class="oauthLogin" :href="gitee_oauth.getGiteeCode">
             <img src="../assets/oauth/gitee.ico">
             <p>使用Gitee登录</p>
          </a>
@@ -64,7 +64,8 @@ let gitee_oauth = reactive({
    client_secret: '3b37caff1a9ba15e9b9cb733570397a84df13c78912b3db31e1da156a3b46c6c',
    redirect_uri: 'http://localhost:5379/',
    grant_type: 'authorization_code',
-   code: ''
+   code: '',
+   getGiteeCode: '/gitee_oauth/oauth/authorize?client_id=13f223ff6430370d8c1c72f205d012f48683573db683e7b1de977dd9a83743f6&redirect_uri=http://localhost:5379/&response_type=code'
 })
 let github_oauth = reactive({
    client_id: 'Ov23lipUEoYvRhFlGKo0',
@@ -72,25 +73,26 @@ let github_oauth = reactive({
    redirect_uri: 'http://localhost:5379/',
    grant_type: 'authorization_code',
    code: '',
-   useGithub: true
+   getGithubCode: '/github_oauth/login/oauth/authorize?client_id=Ov23lipUEoYvRhFlGKo0&redirect_uri=http://localhost:5379/'
 })
+
 
 /* method */
 function oauthLogin() {
-   let url = window.location.href.split('?')[1]
-   if (url) {
-      let arr1 = url.split("&")
-      for (let i in arr1) {
-         let arr2 = arr1[i].split("=")
-         if ('code' == arr2[0]) {
-            console.log("授权码-->" + arr2[1])//授权码
-            if (arr2[1].length <= 25) {
-               github_oauth.code = arr2[1]
+   let params = window.location.href.split('?')[1]
+   if (params) {
+      let param = params.split(/[#&]/)
+      for (let i in param) {
+         let key_val = param[i].split("=")
+         if ('code' == key_val[0]) {
+            console.log("授权码-->" + key_val[1])//授权码
+            if (key_val[1].length <= 25) {
+               github_oauth.code = key_val[1]
                getGithubToken()
             }
             else {
-               gitee_oauth.code = arr2[1]
-               getGiteeToken(arr2[1])
+               gitee_oauth.code = key_val[1]
+               getGiteeToken()
             }
          }
       }
@@ -145,7 +147,7 @@ function clickStyle(el) {
       elStyle.color = 'grey'
    }
 }
-function getGithubToken(code) {
+function getGithubToken() {
    loginLoading.value = true
    axios.post("/github_oauth/login/oauth/access_token", github_oauth,).then(
       response => {
@@ -171,7 +173,7 @@ function getGithubUser(token) {
          getAccessToken()
       }).catch((error) => { console.log(error); })
 }
-async function getAccessToken() {
+async function getAccessToken() {//第三方登录时调用
    const response = await axios.get("/gateway/getAccessToken?username=" + user.name)
    user.token = response.data
    localStorage.setItem('token', user.token)
