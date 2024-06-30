@@ -1,5 +1,5 @@
 <template>
-<!-- 预览图片 -->
+   <!-- 预览图片 -->
    <div class="mask" v-show="elShow.mask" @click="exitPrepicture()">
       <img class="prepicture" :src="prepicture" />
    </div>
@@ -18,7 +18,7 @@
                   <div class="image" v-for='picture of pictures' :key='picture.id' @click="prePicture(picture.url)">
                      <img :src="picture.url">
                      <p>{{picture.name}}</p>
-                     <el-icon @click="deletePicture(picture.name)">
+                     <el-icon @click="deletePicture(picture.id)">
                         <Delete />
                      </el-icon>
                   </div>
@@ -34,13 +34,14 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import axios from 'axios'
+import emitter from '../../utils/bus'
 import { ElMessage } from 'element-plus'
 /* data */
 let currentPage = ref(1)
 let prepicture = ref('')
 let imgLoading = ref()
 let pictureCount = ref()
-const baseURL='/rotation/api/media'
+const baseURL = '/rotation/api/media'
 let pictures = reactive([
    { id: 0, name: '和泉纱雾', url: '/src/assets/image/和泉纱雾 (2).jpg' },
    { id: 1, name: '和泉纱雾', url: '/src/assets/image/和泉纱雾 (3).jpg' },
@@ -58,9 +59,9 @@ let elShow = reactive({
 
 
 /* method */
-function deletePicture(pictureName) {
+function deletePicture(pictureId) {
    location.reload()
-   axios.get(baseURL+"/deletePicture?objectName=" + pictureName + '.jpg' + '&pageNo=' + currentPage.value, { headers: { 'Authorization': localStorage.getItem('token') } }).then(
+   axios.get(baseURL + "/deletePicture?pictureId=" + pictureId + '&pageNo=' + currentPage.value, { headers: { 'Authorization': localStorage.getItem('token') } }).then(
       response => {
          if (response.data == true)
             ElMessage.success({ message: '删除成功', duration: 1000 })
@@ -71,14 +72,14 @@ function deletePicture(pictureName) {
 }
 function getPictureByPageNo(pageNo) {
    imgLoading.value = true
-   axios.get(baseURL+'/getPictureByPageNo/' + pageNo, { headers: { 'Authorization': localStorage.getItem('token') } }).then(
+   axios.get(baseURL + '/getPictureByPageNo/' + pageNo, { headers: { 'Authorization': localStorage.getItem('token') } }).then(
       response => {
          pictures.splice(0, pictures.length)
          for (let i = 0; i < response.data.length; i++)
-            pictures[i] = { id: i, url: response.data[i].url, name: response.data[i].name.split('.')[0] }
-         setTimeout(() => [
+            pictures[i] = { id: response.data[i].id, url: response.data[i].objectUrl, name: response.data[i].objectName.split('.')[0] }
+         setTimeout(() => {
             imgLoading.value = false
-         ], 500)
+         }, 500)
       }
    ).catch((error) => {
       setTimeout(() => {
@@ -96,9 +97,10 @@ function exitPrepicture() {
    prepicture.value = ''
 }
 function getPictureCount() {
-   axios.get(baseURL+"/getPictureCount", { headers: { 'Authorization': localStorage.getItem('token') } }).then(
+   axios.get(baseURL + "/getPictureCount", { headers: { 'Authorization': localStorage.getItem('token') } }).then(
       response => {
          pictureCount.value = response.data
+         emitter.emit('pageNo', Math.ceil(pictureCount.value / 9))
       },
       error => {
          pictureCount.value = 27
@@ -117,14 +119,14 @@ onMounted(() => {
 
 <style lang='less' scoped>
 @keyframes rotate-in-2-bck-ccw {
-  0% {
-    transform: translateZ(200px) rotate(45deg);
-    opacity: 0;
-  }
-  100% {
-    transform: translateZ(0) rotate(0);
-    opacity: 1;
-  }
+   0% {
+      transform: translateZ(200px) rotate(45deg);
+      opacity: 0;
+   }
+   100% {
+      transform: translateZ(0) rotate(0);
+      opacity: 1;
+   }
 }
 .el-skeleton {
    width: 1000px;
@@ -150,7 +152,7 @@ onMounted(() => {
    left: 18%;
    top: 10%;
    border-radius: 4%;
-   animation: rotate-in-2-bck-ccw 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+   animation: rotate-in-2-bck-ccw 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
 }
 .image_container {
    margin: 0 auto;

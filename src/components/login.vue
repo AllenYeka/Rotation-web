@@ -286,11 +286,12 @@ onMounted(() => {
    width: 70%;
    height: 7%;
    font-size: 20px;
-   padding-left: 7px;
+   padding-left: 10px;
    border: 1px rgba(128, 128, 128, 0.407) solid;
    border-radius: 6px;
    color: grey;
    margin-top: 4%;
+   box-sizing: border-box;
    &:hover {
       border: 1px grey solid;
    }

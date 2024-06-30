@@ -15,26 +15,50 @@
 
 
 <script setup>
-import { provide, inject, onMounted, reactive, ref } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import { ElMessage } from "element-plus"
+import emitter from '../../utils/bus'
+import axios from 'axios'
+
 /* data */
 let user = reactive(JSON.parse(localStorage.getItem('user')))
 let uploadRef = ref()
+const baseURL = '/rotation/api/media'
 let header = reactive({
-   'Authorization': localStorage.getItem('token')
+   'Authorization': localStorage.getItem('token'),
+   'RUser': encodeURIComponent(user.name),
+   'RAvatar': user.avatar_url,
+   'RPageNo': 0
 })
+
 
 /* method */
 function uploadPicture() {
    uploadRef.value.submit()
 }
+function getPageNo() {
+   axios.get(baseURL + "/getPictureCount", { headers: { 'Authorization': localStorage.getItem('token') } }).then(
+      response => {
+         header.RPageNo = Math.ceil(response.data / 9)
+      },
+      error => {
+         header.RPageNo = 0
+      }
+   ).catch((error) => { console.log(error) })
+}
+
+
+/* 钩子 */
+onMounted(() => {
+   getPageNo()
+})
 </script>
 
 
 <style lang='less'>
-.user_container .el-upload--picture-card{
-   &:hover{
-      border:1px dashed #33af90;
+.user_container .el-upload--picture-card {
+   &:hover {
+      border: 1px dashed #33af90;
    }
 }
 .user_container .el-button {

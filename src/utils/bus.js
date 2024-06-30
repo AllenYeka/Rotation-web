@@ -1,2 +1,2 @@
-import emit from 'emit'
+import emit from 'mitt'
 export default emit()
