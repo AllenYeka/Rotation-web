@@ -18,9 +18,7 @@
                   <div class="image" v-for='picture of pictures' :key='picture.id' @click="prePicture(picture.url)">
                      <img :src="picture.url">
                      <p>{{picture.name}}</p>
-                     <el-icon @click="deletePicture(picture.id)">
-                        <Delete />
-                     </el-icon>
+                     <img :src="picture.avatar">
                   </div>
                </div>
                <el-pagination layout="prev, pager, next" :page-size="9" :total="pictureCount" v-model:current-page="currentPage" @current-change="getPictureByPageNo(currentPage)" />
@@ -40,18 +38,19 @@ import { ElMessage } from 'element-plus'
 let currentPage = ref(1)
 let prepicture = ref('')
 let imgLoading = ref()
+let user = reactive(JSON.parse(localStorage.getItem('user')))
 let pictureCount = ref()
 const baseURL = '/rotation/api/media'
 let pictures = reactive([
-   { id: 0, name: '和泉纱雾', url: '/src/assets/image/和泉纱雾 (2).jpg' },
-   { id: 1, name: '和泉纱雾', url: '/src/assets/image/和泉纱雾 (3).jpg' },
-   { id: 2, name: '和泉纱雾', url: '/src/assets/image/和泉纱雾 (4).jpg' },
-   { id: 3, name: '和泉纱雾', url: '/src/assets/image/和泉纱雾 (5).jpg' },
-   { id: 4, name: '和泉纱雾', url: '/src/assets/image/和泉纱雾 (6).jpg' },
-   { id: 5, name: '和泉纱雾', url: '/src/assets/image/和泉纱雾.jpg' },
-   { id: 6, name: '白色', url: '/src/assets/image/白色 (2).jpg' },
-   { id: 7, name: '白色', url: '/src/assets/image/白色 (3).jpg' },
-   { id: 8, name: '白色', url: '/src/assets/image/白色 (4).jpg' },
+   { id: 0, name: '和泉纱雾', url: '/src/assets/image/和泉纱雾 (2).jpg', author: '乔尼', avatar: user.avatar_url },
+   { id: 1, name: '和泉纱雾', url: '/src/assets/image/和泉纱雾 (3).jpg', author: '杰洛', avatar: user.avatar_url },
+   { id: 2, name: '和泉纱雾', url: '/src/assets/image/和泉纱雾 (4).jpg', author: '乔尼', avatar: user.avatar_url },
+   { id: 3, name: '和泉纱雾', url: '/src/assets/image/和泉纱雾 (5).jpg', author: '杰洛', avatar: user.avatar_url },
+   { id: 4, name: '和泉纱雾', url: '/src/assets/image/和泉纱雾 (6).jpg', author: '乔尼', avatar: user.avatar_url },
+   { id: 5, name: '和泉纱雾', url: '/src/assets/image/和泉纱雾.jpg', author: '杰洛', avatar: user.avatar_url },
+   { id: 6, name: '白色', url: '/src/assets/image/白色 (2).jpg', author: '乔尼', avatar: user.avatar_url },
+   { id: 7, name: '白色', url: '/src/assets/image/白色 (3).jpg', author: '杰洛', avatar: user.avatar_url },
+   { id: 8, name: '白色', url: '/src/assets/image/白色 (4).jpg', author: '乔尼', avatar: user.avatar_url },
 ])
 let elShow = reactive({
    mask: false
@@ -76,7 +75,7 @@ function getPictureByPageNo(pageNo) {
       response => {
          pictures.splice(0, pictures.length)
          for (let i = 0; i < response.data.length; i++)
-            pictures[i] = { id: response.data[i].id, url: response.data[i].objectUrl, name: response.data[i].objectName.split('.')[0] }
+            pictures[i] = { id: response.data[i].id, url: response.data[i].objectUrl, name: response.data[i].objectName.split('.')[0], avatar: response.data[i].userAvatarUrl, author: response.data[i].username }
          setTimeout(() => {
             imgLoading.value = false
          }, 500)
@@ -173,7 +172,7 @@ onMounted(() => {
       transition: all 0.4s;
       cursor: pointer;
       position: relative;
-      img {
+      img:nth-child(1) {
          width: 350px;
          height: 200px;
          transition: all 0.4s;
@@ -181,11 +180,12 @@ onMounted(() => {
             border-radius: 4%;
          }
       }
-      .el-icon {
-         color: grey;
+      img:nth-child(3) {
+         border-radius: 100%;
          position: absolute;
          right: 10px;
-         bottom: 15px;
+         bottom: 10px;
+         width: 8%;
          &:hover {
             color: #10a37ea0;
          }
