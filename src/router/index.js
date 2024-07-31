@@ -9,9 +9,11 @@ const router = createRouter({//创建路由器对象
             name: 'index', path: '/index', component: () => import("../components/index.vue"), redirect: "/home",
             children: [
                 { name: 'home', path: '/home', component: () => import("../components/home/home.vue"), },
+                { name: 'all_user', path: '/all_user', component: () => import("../components/home/all_user.vue"), },
+                { name: 'all_media', path: '/all_media', component: () => import("../components/home/all_media.vue"), },
                 { name: 'findImg', path: '/findImg', component: () => import("../components/find/findImg.vue"), },
-                { name: 'findVideo', path: '/findVideo', component: () => import("../components/find/findVideo.vue"), },
                 { name: 'usermsg', path: '/usermsg', component: () => import("../components/usermsg/usermsg.vue"), },
+                { name: 'createImg', path: '/createImg', component: () => import("../components/create/createImg.vue"), },
             ]
         },
     ]

@@ -122,6 +122,11 @@ async function login() {
          const response = await axios.post("/gateway/login", { 'username': user.name, 'password': user.password }, { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } })
          if (response.data.status == 'OK') {
             user.token = response.data.token
+            user.name = response.data.user.username
+            user.bio = response.data.user.bio
+            user.email = response.data.user.email
+            user.avatar_url = response.data.user.avatarUrl
+            localStorage.setItem('user', JSON.stringify(user))
             localStorage.setItem("token", user.token)
             router.push({ path: "/index", query: user })
             ElMessage.success({ message: '登录成功', duration: 1000 })
@@ -174,7 +179,7 @@ function getGithubUser(token) {
       }).catch((error) => { console.log(error); })
 }
 async function getAccessToken() {//第三方登录时调用
-   const response = await axios.get("/gateway/getAccessToken?username=" + user.name)
+   const response = await axios.post("/gateway/getAccessToken", { username: user.name, password: user.password, bio: user.bio, email: user.email, avatarUrl: user.avatar_url })
    user.token = response.data
    localStorage.setItem('token', user.token)
    localStorage.setItem('user', JSON.stringify(user))

@@ -13,12 +13,12 @@
          </template>
          <!-- 真实DOM -->
          <template #default>
-            <el-scrollbar height="650px">
+            <el-scrollbar height="640px">
                <div class="image_container">
                   <div class="image" v-for='picture of pictures' :key='picture.id' @click="prePicture(picture.url)">
                      <img :src="picture.url">
                      <p>{{picture.name}}</p>
-                     <img :src="picture.avatar">
+                     <img :src="picture.avatar" @click.stop='queryUser()'>
                   </div>
                </div>
                <el-pagination layout="prev, pager, next" :page-size="9" :total="pictureCount" v-model:current-page="currentPage" @current-change="getPictureByPageNo(currentPage)" />
@@ -34,6 +34,7 @@ import { ref, reactive, onMounted } from 'vue'
 import axios from 'axios'
 import emitter from '../../utils/bus'
 import { ElMessage } from 'element-plus'
+
 /* data */
 let currentPage = ref(1)
 let prepicture = ref('')
@@ -55,6 +56,9 @@ let pictures = reactive([
 let elShow = reactive({
    mask: false
 })
+let userMedia = reactive([
+   { id: 0, name: '和泉纱雾', url: '/src/assets/image/和泉纱雾 (2).jpg', author: '乔尼', avatar: user.avatar_url },
+])
 
 
 /* method */
@@ -106,6 +110,16 @@ function getPictureCount() {
       }
    ).catch((error) => { console.log(error) })
 }
+async function getMediaByUser(username) {
+   const response = await axios.get(baseURL + '/getMediaByUser?username=' + encodeURIComponent(username), { headers: { 'Authorization': localStorage.getItem('token') } })
+   for (let i = 0; i < (await response).data.length; i++) {
+      userMedia[i] = { id: response.data[i].id, url: response.data[i].objectUrl, name: response.data[i].objectName.split('.')[0], avatar: response.data[i].userAvatarUrl, author: response.data[i].username }
+   }
+   console.log(userMedia)
+}
+function queryUser() {
+   console.log(12)
+}
 
 
 /* 钩子 */
@@ -140,7 +154,7 @@ onMounted(() => {
    --el-pagination-hover-color: rgba(0, 128, 0, 0.456);
    position: relative;
    top: 150px;
-   transform: translate(100px);
+   left: 600px;
    width: 400px;
 }
 .prepicture {

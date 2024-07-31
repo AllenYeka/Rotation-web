@@ -237,7 +237,7 @@ onMounted(() => {
 </script>
 
 
-<style lang='less'>
+<style lang='less' scoped>
 @keyframes slide-in-top {
   0% {
     transform: translateY(-1000px);
