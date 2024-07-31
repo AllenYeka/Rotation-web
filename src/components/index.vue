@@ -46,7 +46,11 @@ const route = useRoute()
 const router = useRouter()
 const baseURL = '/rotation/api/content/menu'
 let menuItemList = reactive([
-   { menuItem: { id: 0, menuItemName: '', parentId: 0, isLeaf: 0, route: '',icon:'' }, sonItem: [] },
+   { menuItem: { id: 1, menuItemName: '首页', parentId: 0, isLeaf: 0, route: '', icon: 'Location' }, sonItem: [{ menuItem: { id: 5, menuItemName: '角色', parentId: 1, isLeaf: 1, route: '/home', icon: '' } }, { menuItem: { id: 9, menuItemName: '用户', parentId: 1, isLeaf: 1, route: '/all_user', icon: '' } }, { menuItem: { id: 10, menuItemName: '资源', parentId: 1, isLeaf: 1, route: '/all_media', icon: '' } }] },
+   { menuItem: { id: 2, menuItemName: '发现', parentId: 0, isLeaf: 0, route: '', icon: 'Search' }, sonItem: [{ menuItem: { id: 4, menuItemName: '图片', parentId: 2, isLeaf: 1, route: '/findImg', icon: '' } }] },
+   { menuItem: { id: 3, menuItemName: '我的', parentId: 0, isLeaf: 0, route: '', icon: 'User' }, sonItem: [{ menuItem: { id: 6, menuItemName: '信息', parentId: 3, isLeaf: 1, route: '/usermsg', icon: '' } }] },
+   { menuItem: { id: 7, menuItemName: '创造', parentId: 0, isLeaf: 0, route: '', icon: 'MagicStick' }, sonItem: [{ menuItem: { id: 8, menuItemName: 'AI绘画', parentId: 7, isLeaf: 1, route: '/createImg', icon: '' } }] },
+   { menuItem: { id: 10, menuItemName: '本地菜单', parentId: 0, isLeaf: 0, route: '', icon: 'SwitchButton' }, sonItem: [] },
 ])
 let user = reactive(JSON.parse(localStorage.getItem('user')))
 
@@ -58,6 +62,7 @@ function logout() {
    location.href = 'http://localhost:5379/#/login'
 }
 async function menuList() {
+   menuItemList.splice(0, menuItemList.length)
    const response = await axios.get(baseURL + '/menuList', { headers: { 'Authorization': localStorage.getItem('token') } })
    for (let i = 0; i < response.data.length; i++)
       menuItemList[i] = response.data[i]
