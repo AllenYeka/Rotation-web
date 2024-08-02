@@ -19,20 +19,55 @@
             </div>
          </div>
          <hr />
-         <!-- 用户资源信息 -->
-         <el-skeleton :loading="loading.imgLoading_user" animated :count="2">
+         <!-- 导航 -->
+         <el-menu mode="horizontal" @select="handleSelect" default-active='1' background-color='whitesmoke' active-text-color="#10a37f" :ellipsis=false>
+            <el-menu-item index="1">作品</el-menu-item>
+            <el-menu-item index="2">收藏</el-menu-item>
+            <el-menu-item index="3">关注</el-menu-item>
+            <el-menu-item index="4">粉丝</el-menu-item>
+         </el-menu>
+
+         <!-- 作品 -->
+         <el-skeleton :loading="loading.imgLoading_user" animated :count="2" v-show='elShow.media'>
             <!-- 骨架屏 -->
             <template #template>
-               <el-skeleton-item variant="image" style="width: 360px; height: 250px; margin-left:30px; margin-bottom:10px;" />
-               <el-skeleton-item variant="image" style="width: 360px; height: 250px; margin-left:30px; margin-bottom:10px;" />
+               <el-skeleton-item variant="image" style="width: 360px; height: 250px; margin-left:30px;" />
+               <el-skeleton-item variant="image" style="width: 360px; height: 250px; margin-left:30px;" />
             </template>
             <!-- 真实DOM -->
             <template #default>
                <el-scrollbar max-height="420px">
-                  <img :src="media.objectUrl" v-for='media of userMedia.medias' :key="media.id" :alt='media.objectName'>
+                  <img class='media_img' :src="media.objectUrl" v-for='media of userMedia.medias' :key="media.id" :alt='media.objectName'>
                </el-scrollbar>
             </template>
          </el-skeleton>
+
+         <!-- 收藏 -->
+         <el-scrollbar max-height="420px" v-show='elShow.collection'>
+            <img class='media_img' :src="collection_media.objectUrl" v-for='collection_media of userMedia.collection' :key="collection_media.id" :alt='collection_media.objectName'>
+         </el-scrollbar>
+
+         <!-- 关注 -->
+         <el-scrollbar max-height="420px" v-show='elShow.concern'>
+            <div class="user_caf" v-for='concernItem of userMedia.concern' :key="concernItem.id">
+               <img :src="concernItem.avatarUrl" />
+               <div>
+                  <span>{{concernItem.username}}</span>
+                  <p>{{concernItem.bio}}</p>
+               </div>
+            </div>
+         </el-scrollbar>
+
+         <!-- 粉丝 -->
+         <el-scrollbar max-height="420px" v-show='elShow.fans'>
+            <div class="user_caf" v-for='fan of userMedia.fans' :key="fan.id">
+               <img :src="fan.avatarUrl" />
+               <div>
+                  <span>{{fan.username}}</span>
+                  <p>{{fan.bio}}</p>
+               </div>
+            </div>
+         </el-scrollbar>
       </div>
    </div>
    <!-- 所有图片 -->
@@ -81,8 +116,18 @@ let userMedia = reactive({
    bio: '',
    medias: [
       { id: 0, objectName: '杰洛.齐贝林', objectUrl: '/src/assets/image/j1.jpg' },
-      { id: 0, objectName: '杰洛.齐贝林', objectUrl: '/src/assets/image/j2.jpg' }
-   ]
+      { id: 1, objectName: '杰洛.齐贝林', objectUrl: '/src/assets/image/j2.jpg' }
+   ],
+   collection: [
+      { id: 0, objectName: '杰洛.齐贝林', objectUrl: '/src/assets/image/j1.jpg' },
+      { id: 1, objectName: '杰洛.齐贝林', objectUrl: '/src/assets/image/j2.jpg' }
+   ],
+   concern: [
+      { id: 0, username: '杰洛.齐贝林', avatarUrl: 'https://avatars.githubusercontent.com/u/94109480?v=4', bio: '结果谁都无法知道,因触网而弹起的网球会落到哪一边,就是因为这样,人们才会希望『女神』真的存在。如果她真的存在的话,不管最后的结果如何,我都能坦然接受' }
+   ],
+   fans: [
+      { id: 0, username: '乔尼.乔斯达', avatarUrl: 'https://foruda.gitee.com/avatar/1719841511744367127/11729822_wangriqing_1719841511.png', bio: '就只差一步了！我现在还只是『负数』！我只是想让自己从『负数』变为『零』而已啊' }
+   ],
 })
 let pictures = reactive([
    { id: 0, name: '和泉纱雾', url: '/src/assets/image/和泉纱雾 (2).jpg', author: '乔尼', avatar: user.avatar_url },
@@ -97,7 +142,11 @@ let pictures = reactive([
 ])
 let elShow = reactive({
    mask: false,
-   userMediaMask: false
+   userMediaMask: false,
+   media: false,
+   collection: false,
+   concern: false,
+   fans: false
 })
 let loading = reactive({
    imgLoading_all: true,
@@ -163,6 +212,7 @@ async function getMediaByUser(username) {
 }
 function queryUser(username) {
    elShow.userMediaMask = true
+   elShow.media = true
    axios.get(baseURL + "/getUserMediaById?username=" + username, { headers: { Authorization: localStorage.getItem('token') } }).then(
       response => {
          userMedia.medias.splice(0, userMedia.medias.length)
@@ -173,6 +223,32 @@ function queryUser(username) {
          userMedia.medias = response.data.media
          loading.imgLoading_user = false
       })
+}
+function handleSelect(index) {
+   if (index == 1) {
+      elShow.collection = false
+      elShow.fans = false
+      elShow.concern = false
+      elShow.media = true
+   }
+   else if (index == 2) {
+      elShow.fans = false
+      elShow.concern = false
+      elShow.media = false
+      elShow.collection = true
+   }
+   else if (index == 3) {
+      elShow.fans = false
+      elShow.media = false
+      elShow.collection = false
+      elShow.concern = true
+   }
+   else if (index == 4) {
+      elShow.media = false
+      elShow.collection = false
+      elShow.concern = false
+      elShow.fans = true
+   }
 }
 
 
@@ -219,6 +295,51 @@ onMounted(() => {
       opacity: 1;
    }
 }
+.user_caf {
+   margin-left: 50px;
+   width: 85%;
+   display: flex;
+   height: 60px;
+   padding: 5px;
+   border-bottom: solid grey 0.5px;
+   img {
+      width: 55px;
+      height: 55px;
+      border-radius: 100%;
+   }
+   span {
+      margin-left: 19px;
+      font-size: 14px;
+      color: #10a37f;
+      position: relative;
+      top: 8px;
+   }
+   p {
+      width: 600px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      margin-left: 18px;
+      font-size: 14px;
+      color: grey;
+      position: relative;
+      top: 10px;
+   }
+}
+.el-menu {
+   justify-content: space-between;
+   border-bottom: none;
+   margin-bottom: 5px;
+   .el-menu-item {
+      font-size: 15px;
+      color: grey;
+      width: 25%;
+      --el-menu-hover-bg-color: rgba(221, 221, 221, 0.5);
+      &:hover {
+         color: #10a37f;
+      }
+   }
+}
 .userMedia {
    padding: 20px;
    position: absolute;
@@ -235,7 +356,7 @@ onMounted(() => {
    animation: slide-in-top 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
    .el-scrollbar {
       padding-top: 10px;
-      img {
+      .media_img {
          width: 370px;
          height: 240px;
          margin-left: 10px;

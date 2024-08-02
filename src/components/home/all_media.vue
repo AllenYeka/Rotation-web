@@ -5,6 +5,9 @@
    </div>
    <!-- 资源管理 -->
    <el-table :data="media" style="width: 70%" @row-click='prePicture'>
+      <template #empty>
+         暂无数据
+      </template>
       <el-table-column prop="id" label="ID" align="center" width="100px" />
       <el-table-column prop="objectName" label="资源名称" align="center" />
       <el-table-column prop="username" label="用户" align="center" />
@@ -36,7 +39,7 @@ let currentPage = ref()
 let prepicture = ref('')
 const baseURL = '/rotation/api/media'
 let media = reactive([
-   { id: 0, objectName: '', username: '', createTime: '', userAvatarUrl: '', objectUrl: '' }
+   //{ id: 0, objectName: '', username: '', createTime: '', userAvatarUrl: '', objectUrl: '' }
 ])
 let elShow = reactive({
    mask: false
