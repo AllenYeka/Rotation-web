@@ -20,7 +20,7 @@
          </div>
          <hr />
          <!-- 导航 -->
-         <el-menu mode="horizontal" @select="handleSelect" default-active='1' background-color='whitesmoke' active-text-color="#10a37f" :ellipsis=false>
+         <el-menu mode="horizontal" default-active="1" @select="handleSelect" background-color='whitesmoke' active-text-color="#10a37f" :ellipsis=false>
             <el-menu-item index="1">作品</el-menu-item>
             <el-menu-item index="2">收藏</el-menu-item>
             <el-menu-item index="3">关注</el-menu-item>
@@ -28,23 +28,15 @@
          </el-menu>
 
          <!-- 作品 -->
-         <el-skeleton :loading="loading.imgLoading_user" animated :count="2" v-show='elShow.media'>
-            <!-- 骨架屏 -->
-            <template #template>
-               <el-skeleton-item variant="image" style="width: 360px; height: 250px; margin-left:30px;" />
-               <el-skeleton-item variant="image" style="width: 360px; height: 250px; margin-left:30px;" />
-            </template>
-            <!-- 真实DOM -->
-            <template #default>
-               <el-scrollbar max-height="420px">
-                  <img class='media_img' :src="media.objectUrl" v-for='media of userMedia.medias' :key="media.id" :alt='media.objectName'>
-               </el-scrollbar>
-            </template>
-         </el-skeleton>
+         <el-scrollbar max-height="420px" v-show='elShow.media'>
+            <img class='media_img' :src="media.objectUrl" v-for='media of userMedia.medias' :key="media.id">
+            <p class="noMessage" v-show='elShow.noMedia'>暂无作品</p>
+         </el-scrollbar>
 
          <!-- 收藏 -->
          <el-scrollbar max-height="420px" v-show='elShow.collection'>
-            <img class='media_img' :src="collection_media.objectUrl" v-for='collection_media of userMedia.collection' :key="collection_media.id" :alt='collection_media.objectName'>
+            <img class='media_img' :src="collectItem.objectUrl" v-for='collectItem of userMedia.collection' :key="collectItem.id">
+            <p class="noMessage" v-show='elShow.noCollection'>暂无收藏</p>
          </el-scrollbar>
 
          <!-- 关注 -->
@@ -56,6 +48,7 @@
                   <p>{{concernItem.bio}}</p>
                </div>
             </div>
+            <p class="noMessage" v-show='elShow.noConcern'>暂无关注</p>
          </el-scrollbar>
 
          <!-- 粉丝 -->
@@ -67,6 +60,7 @@
                   <p>{{fan.bio}}</p>
                </div>
             </div>
+            <p class="noMessage" v-show='elShow.noFans'>暂无粉丝</p>
          </el-scrollbar>
       </div>
    </div>
@@ -110,6 +104,7 @@ let user = reactive(JSON.parse(localStorage.getItem('user')))
 let pictureCount = ref()
 const baseURL = '/rotation/api/media'
 let userMedia = reactive({
+   id: 0,
    avatarUrl: '',
    username: '',
    email: '',
@@ -143,14 +138,17 @@ let pictures = reactive([
 let elShow = reactive({
    mask: false,
    userMediaMask: false,
-   media: false,
+   media: true,
+   noMedia: false,
    collection: false,
+   noCollection: false,
    concern: false,
-   fans: false
+   noConcern: false,
+   fans: false,
+   noFans: false
 })
 let loading = reactive({
    imgLoading_all: true,
-   imgLoading_user: true
 })
 
 
@@ -203,25 +201,34 @@ function getPictureCount() {
       }
    ).catch((error) => { console.log(error) })
 }
-async function getMediaByUser(username) {
-   const response = await axios.get(baseURL + '/getMediaByUser?username=' + encodeURIComponent(username), { headers: { 'Authorization': localStorage.getItem('token') } })
-   for (let i = 0; i < (await response).data.length; i++) {
-      userMedia[i] = { id: response.data[i].id, url: response.data[i].objectUrl, name: response.data[i].objectName.split('.')[0], avatar: response.data[i].userAvatarUrl, author: response.data[i].username }
-   }
-   console.log(userMedia)
-}
 function queryUser(username) {
    elShow.userMediaMask = true
-   elShow.media = true
-   axios.get(baseURL + "/getUserMediaById?username=" + username, { headers: { Authorization: localStorage.getItem('token') } }).then(
+   axios.get(baseURL + "/getUserMediaByName?username=" + username, { headers: { Authorization: localStorage.getItem('token') } }).then(
       response => {
-         userMedia.medias.splice(0, userMedia.medias.length)
+         elShow.noMedia = false
+         elShow.noCollection = false
+         elShow.noConcern = false
+         elShow.noFans = false
+
+         userMedia.id = response.data.user.id
          userMedia.avatarUrl = response.data.user.avatarUrl
          userMedia.username = response.data.user.username
          userMedia.email = response.data.user.email
          userMedia.bio = response.data.user.bio
+
          userMedia.medias = response.data.media
-         loading.imgLoading_user = false
+         userMedia.collection = response.data.collection
+         userMedia.concern = response.data.concern
+         userMedia.fans = response.data.fans
+         
+         if (userMedia.medias == null)
+            elShow.noMedia = true
+         if (userMedia.collection == null)
+            elShow.noCollection = true
+         if (userMedia.concern == null)
+            elShow.noConcern = true
+         if (userMedia.fans == null)
+            elShow.noFans = true
       })
 }
 function handleSelect(index) {
@@ -341,32 +348,36 @@ onMounted(() => {
    }
 }
 .userMedia {
-   padding: 20px;
+   padding: 30px;
    position: absolute;
    border-radius: 0.8%;
    z-index: 5;
-   left: 430px;
-   top: 70px;
+   left: 350px;
+   top: 40px;
    width: 800px;
-   height: 580px;
+   height: 600px;
    background-color: whitesmoke;
    overflow: hidden;
    -webkit-animation: slide-in-top 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)
       both;
    animation: slide-in-top 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
    .el-scrollbar {
-      padding-top: 10px;
-      .media_img {
-         width: 370px;
-         height: 240px;
-         margin-left: 10px;
-         margin-right: 10px;
-         margin-bottom: 10px;
-         border-radius: 2%;
-         transition: all 0.3s;
-         &:hover {
-            transform: translate(0, -8px);
-         }
+      .noMessage {
+         color: grey;
+         font-size: 20px;
+         transform: translate(350px, 170px);
+      }
+   }
+   .media_img {
+      width: 370px;
+      height: 220px;
+      margin-left: 10px;
+      margin-right: 10px;
+      margin-bottom: 10px;
+      border-radius: 2%;
+      transition: all 0.3s;
+      &:hover {
+         transform: translate(0, -8px);
       }
    }
    .user_header {
@@ -404,7 +415,7 @@ onMounted(() => {
       padding: 4px;
       color: grey;
       transition: all 0.3s;
-      transform: translate(785px, -17px);
+      transform: translate(795px, -30px);
       &:hover {
          background-color: red;
          color: white;
