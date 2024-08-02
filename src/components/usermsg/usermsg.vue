@@ -4,6 +4,9 @@
       <p>{{user.name}}</p>
       <p>{{user.email}}</p>
       <p>{{user.bio}}</p>
+      <p>关注</p>
+      <p>粉丝</p>
+      <p>收藏</p>
       <el-upload ref='uploadRef' action="/rotation/api/media/uploadPicture" :headers="header" list-type="picture-card" :auto-upload="false" :limit='5' multiple>
          <el-icon>
             <Plus />

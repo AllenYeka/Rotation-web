@@ -61,12 +61,14 @@ function logout() {
    provide('removeToken', 'remove')
    location.href = 'http://localhost:5379/#/login'
 }
-async function menuList() {
-   menuItemList.splice(0, menuItemList.length)
-   const response = await axios.get(baseURL + '/menuList', { headers: { 'Authorization': localStorage.getItem('token') } })
-   for (let i = 0; i < response.data.length; i++)
-      menuItemList[i] = response.data[i]
-   //menuItemList = response.data无法渲染到界面
+function menuList() {
+   axios.get(baseURL + '/menuList', { headers: { 'Authorization': localStorage.getItem('token') } }).then(
+      response => {
+         menuItemList.splice(0, menuItemList.length)
+         for (let i = 0; i < response.data.length; i++)
+            menuItemList[i] = response.data[i]
+         //menuItemList = response.data无法渲染到界面
+      })
 }
 
 

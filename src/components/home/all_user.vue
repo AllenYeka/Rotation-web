@@ -1,33 +1,35 @@
 <template>
    <!-- 用户信息 -->
-   <div class="userMedia" v-show='elShow.userMedia'>
-      <el-icon @click="elShow.userMedia=false">
-         <Close />
-      </el-icon>
-      <!-- 用户头部信息 -->
-      <div class='user_header'>
-         <img :src="userMedia.avatarUrl" />
-         <div>
-            <span>{{userMedia.username}}</span>
-            <span>| {{userMedia.email}}</span>
-            <p>{{userMedia.bio}}</p>
+   <div class="mask" v-show='elShow.userMedia'>
+      <div class="userMedia">
+         <el-icon @click="elShow.userMedia=false">
+            <Close />
+         </el-icon>
+         <!-- 用户头部信息 -->
+         <div class='user_header'>
+            <img :src="userMedia.avatarUrl" />
+            <div>
+               <span>{{userMedia.username}}</span>
+               <span>| {{userMedia.email}}</span>
+               <p>{{userMedia.bio}}</p>
+            </div>
          </div>
+         <hr />
+         <!-- 用户资源信息 -->
+         <el-skeleton :loading="loading.imgLoading" animated :count="2">
+            <!-- 骨架屏 -->
+            <template #template>
+               <el-skeleton-item variant="image" style="width: 360px; height: 250px; margin-left:30px; margin-bottom:10px;" />
+               <el-skeleton-item variant="image" style="width: 360px; height: 250px; margin-left:30px; margin-bottom:10px;" />
+            </template>
+            <!-- 真实DOM -->
+            <template #default>
+               <el-scrollbar max-height="420px">
+                  <img :src="media.objectUrl" v-for='media of userMedia.medias' :key="media.id" :alt='media.objectName'>
+               </el-scrollbar>
+            </template>
+         </el-skeleton>
       </div>
-      <hr />
-      <!-- 用户资源信息 -->
-      <el-skeleton :loading="loading.imgLoading" animated :count="2">
-         <!-- 骨架屏 -->
-         <template #template>
-            <el-skeleton-item variant="image" style="width: 360px; height: 250px; margin-left:30px; margin-bottom:10px;" />
-            <el-skeleton-item variant="image" style="width: 360px; height: 250px; margin-left:30px; margin-bottom:10px;" />
-         </template>
-         <!-- 真实DOM -->
-         <template #default>
-            <el-scrollbar max-height="420px">
-               <img :src="media.objectUrl" v-for='media of userMedia.medias' :key="media.id" :alt='media.objectName'>
-            </el-scrollbar>
-         </template>
-      </el-skeleton>
    </div>
    <!-- 用户表 -->
    <el-table :data="user" style="width: 90%" @row-click="getMediaByUser">

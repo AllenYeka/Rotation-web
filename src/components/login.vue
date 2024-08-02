@@ -130,6 +130,7 @@ async function login() {
             localStorage.setItem("token", user.token)
             router.push({ path: "/index", query: user })
             ElMessage.success({ message: '登录成功', duration: 1000 })
+            console.log(user.token)
          }
          else
             ElMessage.error({ message: '用户不存在或密码错误', duration: 1000 })
