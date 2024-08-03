@@ -1,12 +1,13 @@
 <template>
    <div class="user_container">
       <img :src="user.avatar_url">
+      <p>{{myMedia.id}}</p>
       <p>{{user.name}}</p>
       <p>{{user.email}}</p>
       <p>{{user.bio}}</p>
-      <p>关注</p>
-      <p>粉丝</p>
-      <p>收藏</p>
+      <p>收藏{{myMedia.collection}}</p>
+      <p>关注{{myMedia.concern}}</p>
+      <p>粉丝{{myMedia.fans}}</p>
       <el-upload ref='uploadRef' action="/rotation/api/media/uploadPicture" :headers="header" list-type="picture-card" :auto-upload="false" :limit='5' multiple>
          <el-icon>
             <Plus />
@@ -25,6 +26,7 @@ import axios from 'axios'
 
 /* data */
 let user = reactive(JSON.parse(localStorage.getItem('user')))
+let myMedia = reactive(JSON.parse(localStorage.getItem('myMedia')))
 let uploadRef = ref()
 const baseURL = '/rotation/api/media'
 let header = reactive({

@@ -17,6 +17,7 @@
                <span>| {{userMedia.email}}</span>
                <p>{{userMedia.bio}}</p>
             </div>
+            <el-button class="concern" @click="concernOrcanel($event.target)">关注</el-button>
          </div>
          <hr />
          <!-- 导航 -->
@@ -80,7 +81,7 @@
                   <div class="image" v-for='picture of pictures' :key='picture.id' @click="prePicture(picture.url)">
                      <img :src="picture.url">
                      <p>{{picture.name}}</p>
-                     <img :src="picture.avatar" @click.stop='queryUser(picture.author)'>
+                     <img :src="picture.avatar" @click.stop='getUserMedia(picture.author)'>
                   </div>
                </div>
                <el-pagination layout="prev, pager, next" :page-size="9" :total="pictureCount" v-model:current-page="currentPage" @current-change="getPictureByPageNo(currentPage)" />
@@ -103,6 +104,7 @@ let prepicture = ref('')
 let user = reactive(JSON.parse(localStorage.getItem('user')))
 let pictureCount = ref()
 const baseURL = '/rotation/api/media'
+let myMedia = reactive(JSON.parse(localStorage.getItem('myMedia')))
 let userMedia = reactive({
    id: 0,
    avatarUrl: '',
@@ -145,7 +147,7 @@ let elShow = reactive({
    concern: false,
    noConcern: false,
    fans: false,
-   noFans: false
+   noFans: false,
 })
 let loading = reactive({
    imgLoading_all: true,
@@ -164,7 +166,7 @@ function deletePicture(pictureId) {
       }
    )
 }
-function getPictureByPageNo(pageNo) {
+function getPictureByPageNo(pageNo) {//根据页号获取插画
    loading.imgLoading_all = true
    axios.get(baseURL + '/getPictureByPageNo/' + pageNo, { headers: { 'Authorization': localStorage.getItem('token') } }).then(
       response => {
@@ -182,7 +184,7 @@ function getPictureByPageNo(pageNo) {
       console.log(error)
    })
 }
-function prePicture(url) {
+function prePicture(url) {//预览插画
    elShow.mask = true
    prepicture.value = url
 }
@@ -190,7 +192,7 @@ function exitPrepicture() {
    elShow.mask = false
    prepicture.value = ''
 }
-function getPictureCount() {
+function getPictureCount() {//获取插画总数
    axios.get(baseURL + "/getPictureCount", { headers: { 'Authorization': localStorage.getItem('token') } }).then(
       response => {
          pictureCount.value = response.data
@@ -201,7 +203,7 @@ function getPictureCount() {
       }
    ).catch((error) => { console.log(error) })
 }
-function queryUser(username) {
+function getUserMedia(username) {//获取当前用户的所有信息(作品,收藏,关注,粉丝)
    elShow.userMediaMask = true
    axios.get(baseURL + "/getUserMediaByName?username=" + username, { headers: { Authorization: localStorage.getItem('token') } }).then(
       response => {
@@ -209,18 +211,17 @@ function queryUser(username) {
          elShow.noCollection = false
          elShow.noConcern = false
          elShow.noFans = false
-
+         /* 接受响应数据 */
          userMedia.id = response.data.user.id
          userMedia.avatarUrl = response.data.user.avatarUrl
          userMedia.username = response.data.user.username
          userMedia.email = response.data.user.email
          userMedia.bio = response.data.user.bio
-
          userMedia.medias = response.data.media
          userMedia.collection = response.data.collection
          userMedia.concern = response.data.concern
          userMedia.fans = response.data.fans
-         
+         hasConcern()//判断我是否关注了当前用户
          if (userMedia.medias == null)
             elShow.noMedia = true
          if (userMedia.collection == null)
@@ -257,6 +258,62 @@ function handleSelect(index) {
       elShow.fans = true
    }
 }
+function hasConcern() {//判断我是否关注了当前用户
+   if (myMedia.concern == null || myMedia.concern == '' || myMedia.concern.length == 0)
+      return;
+   else {
+      const concern = myMedia.concern
+      for (let i = 0; i < concern.length; i++) {
+         if (concern[i].id == userMedia.id) {
+            document.getElementsByClassName('concern')[0].getElementsByTagName('span')[0].innerText = '已关注'
+            return;
+         }
+      }
+      document.getElementsByClassName('concern')[0].getElementsByTagName('span')[0].innerText = '关注'
+   }
+}
+function concernOrcanel(el) {//关注或取关
+   if (el.innerText == '关注') {//关注
+      el.innerText = '已关注'
+      axios.post('/gateway/updateConcernAndFans?UID=' + myMedia.id + '&targetUID=' + userMedia.id, { headers: { Authorization: localStorage.getItem('token') } }).then(
+         response => {
+            if (myMedia.concern == null || myMedia.concern == '' || myMedia.concern.length == 0) {
+               myMedia.concern = []
+               myMedia.concern[0] = { id: userMedia.id, username: userMedia.username, avatarUrl: userMedia.avatarUrl, bio: userMedia.bio }
+            }
+            else
+               myMedia.concern.push({ id: userMedia.id, username: userMedia.username, avatarUrl: userMedia.avatarUrl, bio: userMedia.bio })
+            if (userMedia.fans == null || userMedia.fans == '' || userMedia.fans.length == 0) {
+               userMedia.fans = []
+               userMedia.fans[0] = { id: myMedia.id, username: myMedia.username, avatarUrl: myMedia.avatarUrl, bio: myMedia.bio }
+            }
+            else
+               userMedia.fans.push({ id: myMedia.id, username: myMedia.username, avatarUrl: myMedia.avatarUrl, bio: myMedia.bio })
+            localStorage.setItem('myMedia', JSON.stringify(myMedia))
+         })
+   }
+   else if (el.innerText == '已关注') {//取关
+      el.innerText = '关注'
+      axios.post('/gateway/deleteConcernAndFans?UID=' + myMedia.id + '&targetUID=' + userMedia.id, { headers: { Authorization: localStorage.getItem('token') } }).then(
+         response => {
+            for (let i = 0; i < myMedia.concern.length; i++) {
+               if (myMedia.concern[i].id == userMedia.id) {
+                  myMedia.concern.splice(i, 1)
+                  localStorage.setItem('myMedia', JSON.stringify(myMedia))
+                  break
+               }
+            }
+            for (let i = 0; i < userMedia.fans.length; i++) {
+               if (userMedia.fans[i].id == myMedia.id) {
+                  userMedia.fans.splice(i, 1)
+                  break
+               }
+            }
+         })
+   }
+}
+
+
 
 
 /* 钩子 */
@@ -301,6 +358,11 @@ onMounted(() => {
       transform: translateZ(0) rotate(0);
       opacity: 1;
    }
+}
+.concern {
+   transform: translate(220px);
+   --el-button-hover-text-color: #72e4c8;
+   --el-button-hover-border-color: #e6ebea;
 }
 .user_caf {
    margin-left: 50px;

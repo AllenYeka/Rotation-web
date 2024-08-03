@@ -47,6 +47,27 @@ let user = reactive({
    email: '',
    avatar_url: ''
 })
+let myMedia = reactive({
+   id: 0,
+   avatarUrl: '',
+   username: '',
+   email: '',
+   bio: '',
+   medias: [
+      { id: 0, objectName: '杰洛.齐贝林', objectUrl: '/src/assets/image/j1.jpg' },
+      { id: 1, objectName: '杰洛.齐贝林', objectUrl: '/src/assets/image/j2.jpg' }
+   ],
+   collection: [
+      { id: 0, objectName: '杰洛.齐贝林', objectUrl: '/src/assets/image/j1.jpg' },
+      { id: 1, objectName: '杰洛.齐贝林', objectUrl: '/src/assets/image/j2.jpg' }
+   ],
+   concern: [
+      { id: 0, username: '杰洛.齐贝林', avatarUrl: 'https://avatars.githubusercontent.com/u/94109480?v=4', bio: '结果谁都无法知道,因触网而弹起的网球会落到哪一边,就是因为这样,人们才会希望『女神』真的存在。如果她真的存在的话,不管最后的结果如何,我都能坦然接受' }
+   ],
+   fans: [
+      { id: 0, username: '乔尼.乔斯达', avatarUrl: 'https://foruda.gitee.com/avatar/1719841511744367127/11729822_wangriqing_1719841511.png', bio: '就只差一步了！我现在还只是『负数』！我只是想让自己从『负数』变为『零』而已啊' }
+   ],
+})
 let elClass = reactive({
    nameClass: 'name',
    wordClass: 'word'
@@ -130,7 +151,10 @@ async function login() {
             localStorage.setItem("token", user.token)
             router.push({ path: "/index", query: user })
             ElMessage.success({ message: '登录成功', duration: 1000 })
+            getMyMedia(user.name)
             console.log(user.token)
+            console.log(myMedia)
+
          }
          else
             ElMessage.error({ message: '用户不存在或密码错误', duration: 1000 })
@@ -186,6 +210,24 @@ async function getAccessToken() {//第三方登录时调用
    localStorage.setItem('user', JSON.stringify(user))
    router.push({ path: '/index', query: user })
    ElMessage.success({ message: '登录成功', duration: 1000 })
+   getMyMedia(user.name)
+   console.log(myMedia)
+}
+function getMyMedia(username) {
+   axios.get('/rotation/api/media/getUserMediaByName?username=' + username, { headers: { Authorization: localStorage.getItem('token') } }).then(
+      response => {
+         myMedia.id = response.data.user.id
+         myMedia.avatarUrl = response.data.user.avatarUrl
+         myMedia.username = response.data.user.username
+         myMedia.email = response.data.user.email
+         myMedia.bio = response.data.user.bio
+
+         myMedia.medias = response.data.media
+         myMedia.collection = response.data.collection
+         myMedia.concern = response.data.concern
+         myMedia.fans = response.data.fans
+         localStorage.setItem('myMedia', JSON.stringify(myMedia))
+      })
 }
 
 
