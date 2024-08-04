@@ -82,6 +82,14 @@
                      <img :src="picture.url">
                      <p>{{picture.name}}</p>
                      <img :src="picture.avatar" @click.stop='getUserMedia(picture.author)'>
+                     <!-- 未收藏图标 -->
+                     <svg @click.stop="collect(picture)" v-show="collectShowIf(picture.id)" class="icon" t="1722751987478" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1490">
+                        <path d="M512 901.747c-13.584 0-26.122-4.18-37.094-13.061-8.882-7.315-225.698-175.02-312.424-311.38-28.735-44.93-68.441-106.057-68.441-192.784 0-144.718 108.147-262.269 240.326-262.269 67.396 0 131.657 30.825 177.633 84.637 45.453-54.335 109.192-84.637 177.11-84.637 132.702 0 240.327 117.551 240.327 262.27 0 85.159-37.094 143.673-67.396 191.216l-1.045 1.567c-86.727 136.36-303.543 304.588-312.425 311.38-10.449 8.359-22.987 13.06-36.571 13.06zM334.367 164.049c-109.714 0-198.53 98.743-198.53 220.473 0 74.188 33.959 127.478 61.649 170.319 83.07 130.09 294.138 294.139 303.02 300.93 3.657 2.613 7.314 4.18 11.494 4.18s7.837-1.567 11.494-4.18c8.882-6.791 219.95-170.84 303.02-300.93l1.045-1.568c28.212-44.93 60.604-95.608 60.604-168.75 0-121.209-89.339-220.474-198.53-220.474-60.082 0-115.984 29.257-153.6 80.98l-6.27 8.881c-4.18 5.225-10.449 8.36-16.718 8.36s-13.061-3.135-16.718-8.36l-6.27-8.881c-39.706-51.2-96.13-80.98-155.69-80.98z" p-id="1491"></path>
+                     </svg>
+                     <!-- 已收藏图标 -->
+                     <svg @click.stop="cancelCollect(picture)" v-show='!collectShowIf(picture.id)' class="icon" t="1722750585572" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1490">
+                        <path d="M512 901.746939c-13.583673 0-26.122449-4.179592-37.093878-13.061225-8.881633-7.314286-225.697959-175.020408-312.424489-311.379592C133.746939 532.37551 94.040816 471.24898 94.040816 384.522449c0-144.718367 108.146939-262.269388 240.326531-262.269388 67.395918 0 131.657143 30.82449 177.632653 84.636735 45.453061-54.334694 109.191837-84.636735 177.110204-84.636735 132.702041 0 240.326531 117.55102 240.326531 262.269388 0 85.159184-37.093878 143.673469-67.395919 191.216327l-1.044898 1.567346c-86.726531 136.359184-303.542857 304.587755-312.424489 311.379592-10.44898 8.359184-22.987755 13.061224-36.571429 13.061225z" fill="#E5404F" p-id="1491"></path>
+                     </svg>
                   </div>
                </div>
                <el-pagination layout="prev, pager, next" :page-size="9" :total="pictureCount" v-model:current-page="currentPage" @current-change="getPictureByPageNo(currentPage)" />
@@ -147,7 +155,7 @@ let elShow = reactive({
    concern: false,
    noConcern: false,
    fans: false,
-   noFans: false,
+   noFans: false
 })
 let loading = reactive({
    imgLoading_all: true,
@@ -312,7 +320,38 @@ function concernOrcanel(el) {//关注或取关
          })
    }
 }
-
+async function collect(picture) {//收藏
+   const response = await axios.post('/gateway/updateCollection?UID=' + myMedia.id + '&mediaID=' + picture.id, { headers: { Authorization: localStorage.getItem('token') } })
+   if (myMedia.collection.length == 0 || myMedia.collection == '' || myMedia.collection == null) {
+      myMedia.collection = []
+      myMedia.collection.push({ id: picture.id, objectName: picture.name, objectUrl: picture.url })
+   }
+   else
+      myMedia.collection.push({ id: picture.id, objectName: picture.name, objectUrl: picture.url })
+   localStorage.setItem('myMedia', JSON.stringify(myMedia))
+}
+async function cancelCollect(picture) {//取消收藏
+   const response = await axios.post('/gateway/cancelCollection?UID=' + myMedia.id + '&mediaID=' + picture.id, { headers: { Authorization: localStorage.getItem('token') } })
+   for (let i = 0; i < myMedia.collection.length; i++) {
+      if (myMedia.collection[i].id == picture.id) {
+         myMedia.collection.splice(i, 1)
+         localStorage.setItem('myMedia', JSON.stringify(myMedia))
+         return
+      }
+   }
+}
+function collectShowIf(pictureId) {//未收藏图标显示与否
+   if (myMedia.collection == null || myMedia.collection == '' || myMedia.collection.length == 0)
+      return true
+   else {
+      for (let i = 0; i < myMedia.collection.length; i++) {
+         if (myMedia.collection[i].id == pictureId) {
+            return false
+         }
+      }
+      return true
+   }
+}
 
 
 
@@ -529,6 +568,18 @@ onMounted(() => {
       transition: all 0.4s;
       cursor: pointer;
       position: relative;
+      .icon {
+         font-size: 25px;
+         position: absolute;
+         right: 50px;
+         bottom: 12px;
+         width: 25px;
+         transition: all 0.3s;
+         animation: turn 2s linear infinite;
+         &:hover {
+            transform: scale(1.2);
+         }
+      }
       img:nth-child(1) {
          width: 350px;
          height: 200px;
@@ -543,9 +594,6 @@ onMounted(() => {
          right: 10px;
          bottom: 10px;
          width: 8%;
-         &:hover {
-            color: #10a37ea0;
-         }
       }
       p {
          text-align: center;
