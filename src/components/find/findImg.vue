@@ -17,7 +17,7 @@
                <span>| {{userMedia.email}}</span>
                <p>{{userMedia.bio}}</p>
             </div>
-            <el-button class="concern" @click="concernOrcanel($event.target)">关注</el-button>
+            <el-button class="concern" @click="concernOrcanel($event.target)" v-show="elShow.concernButton">关注</el-button>
          </div>
          <hr />
          <!-- 导航 -->
@@ -155,7 +155,8 @@ let elShow = reactive({
    concern: false,
    noConcern: false,
    fans: false,
-   noFans: false
+   noFans: false,
+   concernButton: true
 })
 let loading = reactive({
    imgLoading_all: true,
@@ -267,8 +268,13 @@ function handleSelect(index) {
    }
 }
 function hasConcern() {//判断我是否关注了当前用户
+   elShow.concernButton = true
    if (myMedia.concern == null || myMedia.concern == '' || myMedia.concern.length == 0)
       return;
+   if (myMedia.id == userMedia.id) {
+      elShow.concernButton = false
+      return;
+   }
    else {
       const concern = myMedia.concern
       for (let i = 0; i < concern.length; i++) {
@@ -399,7 +405,8 @@ onMounted(() => {
    }
 }
 .concern {
-   transform: translate(220px);
+   position: absolute;
+   left: 720px;
    --el-button-hover-text-color: #72e4c8;
    --el-button-hover-border-color: #e6ebea;
 }
