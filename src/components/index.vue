@@ -50,6 +50,7 @@ let menuItemList = reactive([
    { menuItem: { id: 2, menuItemName: '发现', parentId: 0, isLeaf: 0, route: '', icon: 'Search' }, sonItem: [{ menuItem: { id: 4, menuItemName: '图片', parentId: 2, isLeaf: 1, route: '/findImg', icon: '' } }] },
    { menuItem: { id: 3, menuItemName: '我的', parentId: 0, isLeaf: 0, route: '', icon: 'User' }, sonItem: [{ menuItem: { id: 6, menuItemName: '信息', parentId: 3, isLeaf: 1, route: '/usermsg', icon: '' } }] },
    { menuItem: { id: 7, menuItemName: '创造', parentId: 0, isLeaf: 0, route: '', icon: 'MagicStick' }, sonItem: [{ menuItem: { id: 8, menuItemName: 'AI绘画', parentId: 7, isLeaf: 1, route: '/createImg', icon: '' } }] },
+   { menuItem: { id: 11, menuItemName: '论坛', parentId: 0, isLeaf: 0, route: '', icon: 'ChatLineSquare' }, sonItem: [{ menuItem: { id: 12, menuItemName: '交流', parentId: 11, isLeaf: 1, route: '/chat', icon: '' } }] },
    { menuItem: { id: 10, menuItemName: '本地菜单', parentId: 0, isLeaf: 0, route: '', icon: 'SwitchButton' }, sonItem: [] },
 ])
 let user = reactive(JSON.parse(localStorage.getItem('user')))

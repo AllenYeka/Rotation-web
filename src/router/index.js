@@ -14,6 +14,8 @@ const router = createRouter({//创建路由器对象
                 { name: 'findImg', path: '/findImg', component: () => import("../components/find/findImg.vue"), },
                 { name: 'usermsg', path: '/usermsg', component: () => import("../components/usermsg/usermsg.vue"), },
                 { name: 'createImg', path: '/createImg', component: () => import("../components/create/createImg.vue"), },
+                { name: 'chat', path: '/chat', component: () => import("../components/chat/chat.vue"), },
+                { name: 'tip', path: '/tip', component: () => import("../components/chat/tip.vue"), }
             ]
         },
     ]

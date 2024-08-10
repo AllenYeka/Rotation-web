@@ -135,16 +135,11 @@ let tableData = reactive([
 
 
 /* method */
-function getRoleByPageNo(pageNo) {
-   axios.get(baseURL + '/getRoleByPageNo?pageNo=' + pageNo, { headers: { 'Authorization': localStorage.getItem('token') } }).then(
-      response => {
-         tableData.splice(0, tableData.length)
-         for (let i = 0; i < response.data.length; i++)
-            tableData[i] = response.data[i]
-      }
-   ).catch((error) => {
-      console.log(error)
-   })
+async function getRoleByPageNo(pageNo) {
+   const response = await axios.get(baseURL + '/getRoleByPageNo?pageNo=' + pageNo, { headers: { 'Authorization': localStorage.getItem('token') } })
+   tableData.splice(0, tableData.length)
+   for (let i = 0; i < response.data.length; i++)
+      tableData[i] = response.data[i]
 }
 function getRoleCount() {
    axios.get(baseURL + '/getRoleCount', { headers: { 'Authorization': localStorage.getItem('token') } }).then(
@@ -239,14 +234,14 @@ onMounted(() => {
 
 <style lang='less' scoped>
 @keyframes slide-in-top {
-  0% {
-    transform: translateY(-1000px);
-    opacity: 0;
-  }
-  100% {
-    transform: translateY(0);
-    opacity: 1;
-  }
+   0% {
+      transform: translateY(-1000px);
+      opacity: 0;
+   }
+   100% {
+      transform: translateY(0);
+      opacity: 1;
+   }
 }
 .messageBox_cancel {
    &:hover {
@@ -269,7 +264,7 @@ onMounted(() => {
    padding-top: 60px;
    box-sizing: border-box;
    position: relative;
-   animation: slide-in-top 0.4s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+   animation: slide-in-top 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
    .el-input {
       width: 80%;
       --el-input-focus-border-color: #10a37e;

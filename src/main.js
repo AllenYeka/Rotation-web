@@ -11,6 +11,9 @@ import 'nprogress/nprogress.css'
 
 axios.interceptors.request.use((request) => {//ajax请求拦截器
     nProgress.start()
+    if (request.headers.Authorization == null || request.headers.Authorization == '')
+        request.headers.Authorization = localStorage.getItem('token')
+    console.log('ajax请求拦截器-->检查token: ' + request.headers.Authorization)
     return request
 })
 axios.interceptors.response.use((response) => {

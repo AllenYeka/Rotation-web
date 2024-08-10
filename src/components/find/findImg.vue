@@ -289,7 +289,7 @@ function hasConcern() {//判断我是否关注了当前用户
 function concernOrcanel(el) {//关注或取关
    if (el.innerText == '关注') {//关注
       el.innerText = '已关注'
-      axios.post('/gateway/updateConcernAndFans?UID=' + myMedia.id + '&targetUID=' + userMedia.id, { headers: { Authorization: localStorage.getItem('token') } }).then(
+      axios.post('/rotation/api/content/updateConcernAndFans?UID=' + myMedia.id + '&targetUID=' + userMedia.id, { headers: { Authorization: localStorage.getItem('token') } }).then(
          response => {
             if (myMedia.concern == null || myMedia.concern == '' || myMedia.concern.length == 0) {
                myMedia.concern = []
@@ -308,7 +308,7 @@ function concernOrcanel(el) {//关注或取关
    }
    else if (el.innerText == '已关注') {//取关
       el.innerText = '关注'
-      axios.post('/gateway/deleteConcernAndFans?UID=' + myMedia.id + '&targetUID=' + userMedia.id, { headers: { Authorization: localStorage.getItem('token') } }).then(
+      axios.post('/rotation/api/content/deleteConcernAndFans?UID=' + myMedia.id + '&targetUID=' + userMedia.id, { headers: { Authorization: localStorage.getItem('token') } }).then(
          response => {
             for (let i = 0; i < myMedia.concern.length; i++) {
                if (myMedia.concern[i].id == userMedia.id) {
@@ -327,7 +327,7 @@ function concernOrcanel(el) {//关注或取关
    }
 }
 async function collect(picture) {//收藏
-   const response = await axios.post('/gateway/updateCollection?UID=' + myMedia.id + '&mediaID=' + picture.id, { headers: { Authorization: localStorage.getItem('token') } })
+   const response = await axios.post('/rotation/api/content/updateCollection?UID=' + myMedia.id + '&mediaID=' + picture.id, { headers: { 'Authorization': localStorage.getItem('token') } })
    if (myMedia.collection.length == 0 || myMedia.collection == '' || myMedia.collection == null) {
       myMedia.collection = []
       myMedia.collection.push({ id: picture.id, objectName: picture.name, objectUrl: picture.url })
@@ -337,7 +337,7 @@ async function collect(picture) {//收藏
    localStorage.setItem('myMedia', JSON.stringify(myMedia))
 }
 async function cancelCollect(picture) {//取消收藏
-   const response = await axios.post('/gateway/cancelCollection?UID=' + myMedia.id + '&mediaID=' + picture.id, { headers: { Authorization: localStorage.getItem('token') } })
+   const response = await axios.post('/rotation/api/content/cancelCollection?UID=' + myMedia.id + '&mediaID=' + picture.id, { headers: { Authorization: localStorage.getItem('token') } })
    for (let i = 0; i < myMedia.collection.length; i++) {
       if (myMedia.collection[i].id == picture.id) {
          myMedia.collection.splice(i, 1)
@@ -370,18 +370,6 @@ onMounted(() => {
 
 
 <style lang='less' scoped>
-@-webkit-keyframes slide-in-top {
-   0% {
-      -webkit-transform: translateY(-1000px);
-      transform: translateY(-1000px);
-      opacity: 0;
-   }
-   100% {
-      -webkit-transform: translateY(0);
-      transform: translateY(0);
-      opacity: 1;
-   }
-}
 @keyframes slide-in-top {
    0% {
       -webkit-transform: translateY(-1000px);
@@ -466,8 +454,6 @@ onMounted(() => {
    height: 600px;
    background-color: whitesmoke;
    overflow: hidden;
-   -webkit-animation: slide-in-top 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)
-      both;
    animation: slide-in-top 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
    .el-scrollbar {
       .noMessage {
