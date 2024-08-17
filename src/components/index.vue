@@ -66,8 +66,7 @@ function menuList() {
    axios.get(baseURL + '/menuList', { headers: { 'Authorization': localStorage.getItem('token') } }).then(
       response => {
          menuItemList.splice(0, menuItemList.length)
-         for (let i = 0; i < response.data.length; i++)
-            menuItemList[i] = response.data[i]
+         Object.assign(menuItemList, response.data)
          //menuItemList = response.data无法渲染到界面
       })
 }

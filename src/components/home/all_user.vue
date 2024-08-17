@@ -76,19 +76,14 @@ let loading = reactive({
 /* method */
 async function getAllUser() {
    const response = await axios.get("/gateway/getAllUser", { headers: { 'Authorization': localStorage.getItem('token') } })
-   for (let i = 0; i < response.data.length; i++)
-      user[i] = response.data[i]
+   Object.assign(user, response.data)
 }
 async function getMediaByUser(row) {
    elShow.userMedia = true
-   userMedia.avatarUrl = row.avatarUrl
-   userMedia.username = row.username
-   userMedia.email = row.email
-   userMedia.bio = row.bio
+   Object.assign(userMedia, row)
    userMedia.medias.splice(0, userMedia.medias.length)
    const response = await axios.get(baseURL + '/getMediaByUser?username=' + row.username, { headers: { Authorization: localStorage.getItem('token') } })
-   for (let i = 0; i < response.data.length; i++)
-      userMedia.medias[i] = response.data[i]
+   Object.assign(userMedia.medias, response.data)
    loading.imgLoading = false
 }
 

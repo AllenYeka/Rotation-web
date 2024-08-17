@@ -138,8 +138,7 @@ let tableData = reactive([
 async function getRoleByPageNo(pageNo) {
    const response = await axios.get(baseURL + '/getRoleByPageNo?pageNo=' + pageNo, { headers: { 'Authorization': localStorage.getItem('token') } })
    tableData.splice(0, tableData.length)
-   for (let i = 0; i < response.data.length; i++)
-      tableData[i] = response.data[i]
+   Object.assign(tableData, response.data)
 }
 function getRoleCount() {
    axios.get(baseURL + '/getRoleCount', { headers: { 'Authorization': localStorage.getItem('token') } }).then(

@@ -14,7 +14,7 @@
          暂无评论
       </div>
       <!-- 评论 -->
-      <div class="comment" v-for='comment of tip.comments' :key='comment.comment_id'>
+      <div class="comment" v-for='comment of tip.comments' :key='comment.commentId'>
          <img :src="comment.avatarUrl" />
          <p>{{comment.username}}</p>
          <p>{{comment.createTime}}</p>
@@ -64,11 +64,11 @@ let elShow = reactive({
 let tip = reactive({
    tipId: 0, title: 'Madao观察日记', uid: 1, username: '杰洛齐贝林', avatarUrl: 'https://avatars.githubusercontent.com/u/94109480?v=4', description: '暑假做了关于Madao的观察日记,MADAO是公园的主人,长着胡子戴着墨镜的生物,基本一整天都不干活在公园里呆着...', tipPicture: '/src/assets/image/803.jpg',
    comments: [
-      { comment_id: 0, uid: 1, username: '杰洛.齐贝林', createTime: '2024-08-09', content: '从他那只顾凝视虚空的干枯双眸中，我什么都揣测不到，好比连神都无法理解堕落在地的堕天使路西法在想什么.我烦透了，我冲着地面吐了口唾沫，点了根马宝路。人必须顺应环境，不断变化才能活下去，那个男人停止了前进，拒绝了变化，已经如同行尸走肉一般', avatarUrl: 'https://avatars.githubusercontent.com/u/94109480?v=4' },
-      { comment_id: 1, uid: 1, username: '杰洛.齐贝林', createTime: '2024-08-09', content: '我把从老妈那偷来的威士忌随手丢给了他。MADAO,环境我给你换了,剩下就该你了。你为什么停滞不前?你到底有什么不满?MADAO对我的问题闭口不答,只是一脸苦涩地舔着威士忌.MADAO什么时候才会开花呢?康多兀鹫在上空盘旋，仿佛在嘲笑仰望天空的我……', avatarUrl: 'https://avatars.githubusercontent.com/u/94109480?v=4' },
-      { comment_id: 2, uid: 1, username: '杰洛.齐贝林', createTime: '2024-08-09', content: '到头来我还是没找到MADAO,感觉头好疼,没法像之前写那么好,我好像感冒了。不知道是为什么,我明明没喝酒,眼里却流出了酒,就像MADAO', avatarUrl: 'https://avatars.githubusercontent.com/u/94109480?v=4' },
-      { comment_id: 3, uid: 2, username: '乔尼.乔斯达', createTime: '2024-08-09', content: 'madao是真正的武士', avatarUrl: 'https://foruda.gitee.com/avatar/1719841511744367127/11729822_wangriqing_1719841511.png!avatar100' },
-      { comment_id: 4, uid: 2, username: '乔尼.乔斯达', createTime: '2024-08-09', content: '泪目', avatarUrl: 'https://foruda.gitee.com/avatar/1719841511744367127/11729822_wangriqing_1719841511.png!avatar100' },
+      { commentId: 0, uid: 1, username: '杰洛.齐贝林', createTime: '2024-08-09', content: '从他那只顾凝视虚空的干枯双眸中，我什么都揣测不到，好比连神都无法理解堕落在地的堕天使路西法在想什么.我烦透了，我冲着地面吐了口唾沫，点了根马宝路。人必须顺应环境，不断变化才能活下去，那个男人停止了前进，拒绝了变化，已经如同行尸走肉一般', avatarUrl: 'https://avatars.githubusercontent.com/u/94109480?v=4' },
+      { commentId: 1, uid: 1, username: '杰洛.齐贝林', createTime: '2024-08-09', content: '我把从老妈那偷来的威士忌随手丢给了他。MADAO,环境我给你换了,剩下就该你了。你为什么停滞不前?你到底有什么不满?MADAO对我的问题闭口不答,只是一脸苦涩地舔着威士忌.MADAO什么时候才会开花呢?康多兀鹫在上空盘旋，仿佛在嘲笑仰望天空的我……', avatarUrl: 'https://avatars.githubusercontent.com/u/94109480?v=4' },
+      { commentId: 2, uid: 1, username: '杰洛.齐贝林', createTime: '2024-08-09', content: '到头来我还是没找到MADAO,感觉头好疼,没法像之前写那么好,我好像感冒了。不知道是为什么,我明明没喝酒,眼里却流出了酒,就像MADAO', avatarUrl: 'https://avatars.githubusercontent.com/u/94109480?v=4' },
+      { commentId: 3, uid: 2, username: '乔尼.乔斯达', createTime: '2024-08-09', content: 'madao是真正的武士', avatarUrl: 'https://foruda.gitee.com/avatar/1719841511744367127/11729822_wangriqing_1719841511.png!avatar100' },
+      { commentId: 4, uid: 2, username: '乔尼.乔斯达', createTime: '2024-08-09', content: '泪目', avatarUrl: 'https://foruda.gitee.com/avatar/1719841511744367127/11729822_wangriqing_1719841511.png!avatar100' },
    ],
 })
 let new_comment = ref('')
@@ -82,47 +82,19 @@ function louzhuShowIf(comment_uid) {
    else
       return false
 }
-function getTipById() {//根据帖子id获取所有信息
-   tip.comments.splice(0, tip.comments.length)
-   axios.get(baseURL + '/getTipById/' + tipId).then(
-      response => {
-         tip.tipId = response.data.tipId
-         tip.title = response.data.title
-         tip.uid = response.data.uid
-         tip.username = response.data.username
-         tip.avatarUrl = response.data.avatarUrl
-         tip.description = response.data.description
-         tip.tipPicture = response.data.tipPicture
-         if (response.data.comments == null || response.data.comments == '' || response.data.comments.length == 0) {
-            elShow.noComment = true
-            return
-         }
-         for (let i = 0; i < response.data.comments.length; i++)
-            tip.comments.push({
-               comment_id: response.data.comments[i].commentId,
-               uid: response.data.comments[i].uid,
-               username: response.data.comments[i].username,
-               createTime: response.data.comments[i].createTime,
-               content: response.data.comments[i].content,
-               avatarUrl: response.data.comments[i].avatarUrl
-            })
-      }).catch(() => {
-         tip.comments.push({ comment_id: 0, uid: 1, username: '杰洛.齐贝林', createTime: '2024-08-09', content: '从他那只顾凝视虚空的干枯双眸中，我什么都揣测不到，好比连神都无法理解堕落在地的堕天使路西法在想什么.我烦透了，我冲着地面吐了口唾沫，点了根马宝路。人必须顺应环境，不断变化才能活下去，那个男人停止了前进，拒绝了变化，已经如同行尸走肉一般', avatarUrl: 'https://avatars.githubusercontent.com/u/94109480?v=4' })
-         tip.comments.push({ comment_id: 1, uid: 1, username: '杰洛.齐贝林', createTime: '2024-08-09', content: '我把从老妈那偷来的威士忌随手丢给了他。MADAO,环境我给你换了,剩下就该你了。你为什么停滞不前?你到底有什么不满?MADAO对我的问题闭口不答,只是一脸苦涩地舔着威士忌.MADAO什么时候才会开花呢?康多兀鹫在上空盘旋，仿佛在嘲笑仰望天空的我……', avatarUrl: 'https://avatars.githubusercontent.com/u/94109480?v=4' })
-         tip.comments.push({ comment_id: 2, uid: 1, username: '杰洛.齐贝林', createTime: '2024-08-09', content: '到头来我还是没找到MADAO,感觉头好疼,没法像之前写那么好,我好像感冒了。不知道是为什么,我明明没喝酒,眼里却流出了酒,就像MADAO', avatarUrl: 'https://avatars.githubusercontent.com/u/94109480?v=4' })
-         tip.comments.push({ comment_id: 3, uid: 2, username: '乔尼.乔斯达', createTime: '2024-08-09', content: 'madao是真正的武士', avatarUrl: 'https://foruda.gitee.com/avatar/1719841511744367127/11729822_wangriqing_1719841511.png!avatar100' })
-         tip.comments.push({ comment_id: 4, uid: 2, username: '乔尼.乔斯达', createTime: '2024-08-09', content: '泪目', avatarUrl: 'https://foruda.gitee.com/avatar/1719841511744367127/11729822_wangriqing_1719841511.png!avatar100' })
-      })
+async function getTipById() {//根据帖子id获取所有信息
+   const response = await axios.get(baseURL + '/getTipById/' + tipId)
+   Object.assign(tip, response.data)
 }
 async function sendComment() {//发送评论
    elShow.sendComment = true
    const response = await axios.post(baseURL + '/sendComment?tipId=' + tip.tipId, { content: new_comment.value, uid: myMedia.id, username: myMedia.username, avatarUrl: myMedia.avatarUrl })
-   if (tip.comments == null || "" == tip.comments || tip.comments.length == 0) {
+   if (!Boolean(tip.comments) || !Boolean(tip.comments.length)) {
       tip.comments = []
-      tip.comments[0] = { comment_id: response.data.commentId, uid: response.data.uid, username: response.data.username, createTime: response.data.createTime, content: response.data.content, avatarUrl: response.data.avatarUrl }
+      tip.comments[0] = response.data
    }
    else
-      tip.comments.push({ comment_id: response.data.commentId, uid: response.data.uid, username: response.data.username, createTime: response.data.createTime, content: response.data.content, avatarUrl: response.data.avatarUrl })
+      tip.comments.push(response.data)
    elShow.sendComment = false
    new_comment.value = ''
 }
@@ -150,16 +122,16 @@ onMounted(() => {
    }
 }
 @keyframes slide-in-left {
-  0% {
-    -webkit-transform: translateX(-1000px);
-            transform: translateX(-1000px);
-    opacity: 0;
-  }
-  100% {
-    -webkit-transform: translateX(0);
-            transform: translateX(0);
-    opacity: 1;
-  }
+   0% {
+      -webkit-transform: translateX(-1000px);
+      transform: translateX(-1000px);
+      opacity: 0;
+   }
+   100% {
+      -webkit-transform: translateX(0);
+      transform: translateX(0);
+      opacity: 1;
+   }
 }
 .el-button {
    color: white;
@@ -191,7 +163,7 @@ onMounted(() => {
    display: inline-block;
    cursor: pointer;
    transition: all 0.2s;
-   animation: slide-in-left 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+   animation: slide-in-left 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
    &:hover {
       background-color: #e9e8e8;
    }

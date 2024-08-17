@@ -49,10 +49,7 @@ let elShow = reactive({
 /* method */
 async function getPictureByPageNo(pageNo) {
    const response = await axios.get(baseURL + "/getPictureByPageNo/" + pageNo, { headers: { 'Authorization': localStorage.getItem('token') } })
-   media.splice(0, media.length)
-   for (let i = 0; i < response.data.length; i++) {
-      media[i] = response.data[i]
-   }
+   Object.assign(media, response.data)
 }
 async function getMediaCount() {
    const response = await axios.get(baseURL + "/getPictureCount", { headers: { 'Authorization': localStorage.getItem('token') } })

@@ -185,13 +185,11 @@ function getPictureByPageNo(pageNo) {//根据页号获取插画
          setTimeout(() => {
             loading.imgLoading_all = false
          }, 500)
-      }
-   ).catch((error) => {
-      setTimeout(() => {
-         loading.imgLoading_all = false
-      }, 500)
-      console.log(error)
-   })
+      }).catch((error) => {
+         setTimeout(() => {
+            loading.imgLoading_all = false
+         }, 500)
+      })
 }
 function prePicture(url) {//预览插画
    elShow.mask = true

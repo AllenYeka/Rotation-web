@@ -83,16 +83,7 @@ function getAllSimpleTip() {//获取帖子列表
    tips.splice(0, tips.length)
    axios.get(baseURL + '/getAllSimpleTip').then(
       response => {
-         for (let i = 0; i < response.data.length; i++) {
-            tips.push({
-               tipId: response.data[i].tipId,
-               title: response.data[i].title,
-               username: response.data[i].username,
-               avatarUrl: response.data[i].avatarUrl,
-               description: response.data[i].description,
-               tipPicture: response.data[i].tipPicture
-            })
-         }
+         Object.assign(tips,response.data)
       }).catch(() => {
          tips.push({ tipId: 1, title: '回旋是怎么练成的', username: '杰洛.齐贝林', avatarUrl: 'https://avatars.githubusercontent.com/u/94109480?v=4', description: '这是一则重生的故事...而今回想起来,在这趟旅程中我总是一直祈祷...祈祷明天的天气、祈祷有安枕之地以及有粮食可以果腹...一边重复着这些理所当然的事,一边祈祷好友及坐骑平安无事,渡过一条又一条河流...如今终于跨越最后一条河流', tipPicture: '/src/assets/image/j5.jpg' })
          tips.push({ tipId: 2, title: 'chatgpt现在允许免费用户每天最多生成两张由dall-e-3制作的图片', username: 'jojo', avatarUrl: 'http://127.0.0.1:9000/wrq/hsy.jpg', description: 'OpenAI 表示,使用《DALL-E 3》创建图像的功能正在"推出",但您可能已经可以使用了:在撰写本文时,在尝试使用 ChatGPT Mac 应用程序创建了两张图像后收到通知,说已经达到了当天的图像创建上限', tipPicture: 'https://img-s-msn-com.akamaized.net/tenant/amp/entityid/AA1ouckW.img?w=673&h=1119&m=6' })

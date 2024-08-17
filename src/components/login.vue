@@ -221,7 +221,6 @@ function getMyMedia(username) {
          myMedia.username = response.data.user.username
          myMedia.email = response.data.user.email
          myMedia.bio = response.data.user.bio
-
          myMedia.medias = response.data.media
          myMedia.collection = response.data.collection
          myMedia.concern = response.data.concern
