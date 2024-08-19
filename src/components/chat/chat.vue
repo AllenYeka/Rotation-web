@@ -72,7 +72,7 @@ let tips = reactive([
    { tipId: 1, title: '回旋是怎么练成的', username: '杰洛.齐贝林', avatarUrl: 'https://avatars.githubusercontent.com/u/94109480?v=4', description: '这是一则重生的故事...而今回想起来,在这趟旅程中我总是一直祈祷...祈祷明天的天气、祈祷有安枕之地以及有粮食可以果腹...一边重复着这些理所当然的事,一边祈祷好友及坐骑平安无事,渡过一条又一条河流...如今终于跨越最后一条河流', tipPicture: '/src/assets/image/j5.jpg' },
    { tipId: 2, title: 'chatgpt现在允许免费用户每天最多生成两张由dall-e-3制作的图片', username: 'jojo', avatarUrl: 'http://127.0.0.1:9000/wrq/hsy.jpg', description: 'OpenAI 表示,使用《DALL-E 3》创建图像的功能正在"推出",但您可能已经可以使用了:在撰写本文时,在尝试使用 ChatGPT Mac 应用程序创建了两张图像后收到通知,说已经达到了当天的图像创建上限', tipPicture: 'https://img-s-msn-com.akamaized.net/tenant/amp/entityid/AA1ouckW.img?w=673&h=1119&m=6' },
    { tipId: 3, title: 'Madao观察日记', username: '乔尼.乔斯达', avatarUrl: 'https://foruda.gitee.com/avatar/1719841511744367127/11729822_wangriqing_1719841511.png!avatar100', description: '暑假做了关于Madao的观察日记,MADAO是公园的主人,长着胡子戴着墨镜的生物,基本一整天都不干活在公园里呆着...', tipPicture: '/src/assets/image/803.jpg' },
-   { tipId: 4, title: '广西一景区突发事故,1人遇难60人受伤', username: '乔尼.乔斯达', avatarUrl: 'https://foruda.gitee.com/avatar/1719841511744367127/11729822_wangriqing_1719841511.png!avatar100', description: '2024年8月10日13时56分，广西德天瀑布景区登高观瀑魔毯项目发生故障.经初步核实,截至18时30分,事故造成1名游客死亡,60名游客受伤(其中,重伤1名,轻伤59名),受伤游客已送往医院治疗.', tipPicture: '/src/assets/image/j6.jpg' }
+   { tipId: 4, title: '广西一景区突发事故,1人遇难60人受伤', username: '乔尼.乔斯达', avatarUrl: 'https://foruda.gitee.com/avatar/1719841511744367127/11729822_wangriqing_1719841511.png!avatar100', description: '2024年8月10日13时56分，广西德天瀑布景区登高观瀑魔毯项目发生故障.经初步核实,截至18时30分,事故造成1名游客死亡,60名游客受伤(其中,重伤1名,轻伤59名),受伤游客已送往医院治疗.', tipPicture: '/src/assets/image/jojo.jpg' }
 ])
 
 /* method */
@@ -88,7 +88,7 @@ function getAllSimpleTip() {//获取帖子列表
          tips.push({ tipId: 1, title: '回旋是怎么练成的', username: '杰洛.齐贝林', avatarUrl: 'https://avatars.githubusercontent.com/u/94109480?v=4', description: '这是一则重生的故事...而今回想起来,在这趟旅程中我总是一直祈祷...祈祷明天的天气、祈祷有安枕之地以及有粮食可以果腹...一边重复着这些理所当然的事,一边祈祷好友及坐骑平安无事,渡过一条又一条河流...如今终于跨越最后一条河流', tipPicture: '/src/assets/image/j5.jpg' })
          tips.push({ tipId: 2, title: 'chatgpt现在允许免费用户每天最多生成两张由dall-e-3制作的图片', username: 'jojo', avatarUrl: 'http://127.0.0.1:9000/wrq/hsy.jpg', description: 'OpenAI 表示,使用《DALL-E 3》创建图像的功能正在"推出",但您可能已经可以使用了:在撰写本文时,在尝试使用 ChatGPT Mac 应用程序创建了两张图像后收到通知,说已经达到了当天的图像创建上限', tipPicture: 'https://img-s-msn-com.akamaized.net/tenant/amp/entityid/AA1ouckW.img?w=673&h=1119&m=6' })
          tips.push({ tipId: 3, title: 'Madao观察日记', username: '乔尼.乔斯达', avatarUrl: 'https://foruda.gitee.com/avatar/1719841511744367127/11729822_wangriqing_1719841511.png!avatar100', description: '暑假做了关于Madao的观察日记,MADAO是公园的主人,长着胡子戴着墨镜的生物,基本一整天都不干活在公园里呆着...', tipPicture: '/src/assets/image/803.jpg' })
-         tips.push({ tipId: 4, title: '广西一景区突发事故,1人遇难60人受伤', username: '乔尼.乔斯达', avatarUrl: 'https://foruda.gitee.com/avatar/1719841511744367127/11729822_wangriqing_1719841511.png!avatar100', description: '2024年8月10日13时56分，广西德天瀑布景区登高观瀑魔毯项目发生故障.经初步核实,截至18时30分,事故造成1名游客死亡,60名游客受伤(其中,重伤1名,轻伤59名),受伤游客已送往医院治疗.', tipPicture: '/src/assets/image/j6.jpg' })
+         tips.push({ tipId: 4, title: '广西一景区突发事故,1人遇难60人受伤', username: '乔尼.乔斯达', avatarUrl: 'https://foruda.gitee.com/avatar/1719841511744367127/11729822_wangriqing_1719841511.png!avatar100', description: '2024年8月10日13时56分，广西德天瀑布景区登高观瀑魔毯项目发生故障.经初步核实,截至18时30分,事故造成1名游客死亡,60名游客受伤(其中,重伤1名,轻伤59名),受伤游客已送往医院治疗.', tipPicture: '/src/assets/image/jojo.jpg' })
       })
 }
 function getFile(file) {//通过el-upload组件的on-change属性获取要上传的文件
@@ -223,7 +223,7 @@ onMounted(() => {
       position: absolute;
       top: 13px;
       right: 13px;
-      width: 20%;
+      width: 21%;
       height: 80%;
    }
    img:nth-child(4) {
