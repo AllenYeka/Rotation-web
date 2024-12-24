@@ -6,22 +6,22 @@ const router = createRouter({//创建路由器对象
         { path: '/', redirect: '/login' },//重定向
         { name: 'login', path: '/login', component: () => import("../components/login.vue") },
         {
-            name: 'index', path: '/index', component: () => import("../components/index.vue"), redirect: "/home",
+            name: 'index', path: '/index', component: () => import("../components/index.vue"), redirect: "/role",
             children: [
-                { name: 'home', path: '/home', component: () => import("../components/home/home.vue"), },
-                { name: 'all_user', path: '/all_user', component: () => import("../components/home/all_user.vue"), },
-                { name: 'all_media', path: '/all_media', component: () => import("../components/home/all_media.vue"), },
+                { name: 'role', path: '/role', component: () => import("../components/manage/role.vue"), },
+                { name: 'user', path: '/user', component: () => import("../components/manage/user.vue"), },
+                { name: 'media', path: '/media', component: () => import("../components/manage/media.vue"), },
                 { name: 'findImg', path: '/findImg', component: () => import("../components/find/findImg.vue"), },
-                { name: 'usermsg', path: '/usermsg', component: () => import("../components/usermsg/usermsg.vue"), },
+                { name: 'userInfo', path: '/userInfo', component: () => import("../components/userInfo/userInfo.vue"), },
                 { name: 'createImg', path: '/createImg', component: () => import("../components/create/createImg.vue"), },
-                { name: 'chat', path: '/chat', component: () => import("../components/chat/chat.vue"), },
-                { name: 'tip', path: '/tip', component: () => import("../components/chat/tip.vue"), }
+                { name: 'tip', path: '/tip', component: () => import("../components/tip/tip.vue"), },
+                { name: 'comment', path: '/comment', component: () => import("../components/tip/comment.vue"), }
             ]
         },
     ]
 })
 router.beforeEach((to, from, next) => {
-    if (localStorage.getItem("token") != null || to.path == '/login' || to.path == '/')
+    if (sessionStorage.getItem("token") != null || to.path == '/login' || to.path == '/')
         next()
     else {
         next('/login')

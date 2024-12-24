@@ -1,5 +1,6 @@
 <template>
    <div class="login_container" v-loading.fullscreen.lock="loginLoading">
+      <!-- 敬下一个遗体及终点 -->
       <div class="introduce">
          <img class="bounce-in-top" v-for="item of jojo" :src="item.path" :key="item.id" />
       </div>
@@ -7,7 +8,7 @@
       <div class="login_box">
          <img class="logo" src="/favicon.ico" width="20%">
          <h1>相信回旋吧!</h1>
-         <input v-model="user.name" class="username" @focus="clickStyle($event.target)" />
+         <input v-model="user.username" class="username" @focus="clickStyle($event.target)" />
          <div class="name">用户名</div>
          <input v-model="user.password" type="password" class="password" @focus="clickStyle($event.target)" @keyup.enter="login()" />
          <div class="word">密码</div>
@@ -31,67 +32,50 @@
 
 
 <script setup>
-import { reactive, ref, onMounted, onBeforeMount, inject, provide } from "vue";
+import { reactive, ref, onMounted, onBeforeMount, inject, provide } from "vue"
 import axios from 'axios'
 import { ElMessage } from "element-plus"
 import { useRouter, useRoute } from "vue-router"
 /* data */
+const ip = window.location.hostname//绿萝
 const router = useRouter()
 const baseImageUri = "/src/assets/image"
 const loginLoading = ref(false)
-let user = reactive({
-   name: '',
-   password: '',
-   token: '',
-   bio: '',
-   email: '',
-   avatar_url: ''
-})
-let myMedia = reactive({
+//sessionStorage.setItem('user', JSON.stringify({ id: 1, nickname: '芷若', avatar: '/src/assets/image/芷若.jpg', email: 'xdhvuexgd@outlook.com', bio: '吾心吾行澄如明镜,所作所为皆属正义' }))
+//sessionStorage.setItem('token', 'token')
+const user = reactive({//授权登录返回的有效数据
    id: 0,
-   avatarUrl: '',
    username: '',
-   email: '',
+   nickname: '',
+   password: '',
    bio: '',
-   medias: [
-      { id: 0, objectName: '杰洛.齐贝林', objectUrl: '/src/assets/image/j1.jpg' },
-      { id: 1, objectName: '杰洛.齐贝林', objectUrl: '/src/assets/image/j2.jpg' }
-   ],
-   collection: [
-      { id: 0, objectName: '杰洛.齐贝林', objectUrl: '/src/assets/image/j1.jpg' },
-      { id: 1, objectName: '杰洛.齐贝林', objectUrl: '/src/assets/image/j2.jpg' }
-   ],
-   concern: [
-      { id: 0, username: '杰洛.齐贝林', avatarUrl: 'https://avatars.githubusercontent.com/u/94109480?v=4', bio: '结果谁都无法知道,因触网而弹起的网球会落到哪一边,就是因为这样,人们才会希望『女神』真的存在。如果她真的存在的话,不管最后的结果如何,我都能坦然接受' }
-   ],
-   fans: [
-      { id: 0, username: '乔尼.乔斯达', avatarUrl: 'https://foruda.gitee.com/avatar/1719841511744367127/11729822_wangriqing_1719841511.png', bio: '就只差一步了！我现在还只是『负数』！我只是想让自己从『负数』变为『零』而已啊' }
-   ],
+   email: '',
+   avatar: '',
 })
-let elClass = reactive({
+const elClass = reactive({
    nameClass: 'name',
    wordClass: 'word'
 })
-let jojo = reactive([
+const jojo = [
    { id: 1, path: baseImageUri + '/j1.jpg' },
    { id: 2, path: baseImageUri + '/j2.jpg' },
    { id: 3, path: baseImageUri + '/j3.jpg' },
    { id: 4, path: baseImageUri + '/j4.jpg' },
    { id: 5, path: baseImageUri + '/j5.jpg' },
    { id: 6, path: baseImageUri + '/j6.jpg' },
-])
-let gitee_oauth = reactive({
+]
+const gitee_oauth = reactive({
    client_id: '13f223ff6430370d8c1c72f205d012f48683573db683e7b1de977dd9a83743f6',
    client_secret: '3b37caff1a9ba15e9b9cb733570397a84df13c78912b3db31e1da156a3b46c6c',
-   redirect_uri: 'http://localhost:5379/',
+   redirect_uri: `http://${ip}:5379/`,
    grant_type: 'authorization_code',
    code: '',
    getGiteeCode: '/gitee_oauth/oauth/authorize?client_id=13f223ff6430370d8c1c72f205d012f48683573db683e7b1de977dd9a83743f6&redirect_uri=http://localhost:5379/&response_type=code'
 })
-let github_oauth = reactive({
+const github_oauth = reactive({
    client_id: 'Ov23lipUEoYvRhFlGKo0',
    client_secret: '0b0b741c4556c2105d3479ff94e0dae0ae7e9b24',
-   redirect_uri: 'http://localhost:5379/',
+   redirect_uri: `http://${ip}:5379/`,
    grant_type: 'authorization_code',
    code: '',
    getGithubCode: '/github_oauth/login/oauth/authorize?client_id=Ov23lipUEoYvRhFlGKo0&redirect_uri=http://localhost:5379/'
@@ -99,7 +83,7 @@ let github_oauth = reactive({
 
 
 /* method */
-function oauthLogin() {
+function getOAuth2Code() {
    let params = window.location.href.split('?')[1]
    if (params) {
       let param = params.split(/[#&]/)
@@ -126,41 +110,35 @@ async function getGiteeToken() {
    getGiteeUser(response.data.access_token)
 }
 async function getGiteeUser(token) {
-   const response = await axios.get("/gitee_oauth/api/v5/user?access_token=" + token)
+   const response = await axios.get("/gitee_oauth/api/v5/user", { params: { access_token: token } })
    loginLoading.value = false
    console.log("gitee用户-->" + response.data)
-   user.name = response.data.name
+   user.id = response.data.id
+   user.username = response.data.login
+   user.nickname = response.data.name
    user.bio = response.data.bio
    user.email = response.data.email
-   user.avatar_url = response.data.avatar_url
+   user.avatar = response.data.avatar_url
    getAccessToken()
 }
-async function login() {
-   if (user.name == '' || user.password == '')
+async function login() {//用户名密码登录
+   if (user.username == '' || user.password == '') {
       ElMessage.warning({ message: '用户名或密码不能为空!', duration: 1000 })
-   else {
-      try {
-         const response = await axios.post("/gateway/login", { 'username': user.name, 'password': user.password }, { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } })
-         if (response.data.status == 'OK') {
-            user.token = response.data.token
-            user.name = response.data.user.username
-            user.bio = response.data.user.bio
-            user.email = response.data.user.email
-            user.avatar_url = response.data.user.avatarUrl
-            localStorage.setItem('user', JSON.stringify(user))
-            localStorage.setItem("token", user.token)
-            router.push({ path: "/index", query: user })
-            ElMessage.success({ message: '登录成功', duration: 1000 })
-            getMyMedia(user.name)
-            console.log(user.token)
-            console.log(myMedia)
-
-         }
-         else
-            ElMessage.error({ message: '用户不存在或密码错误', duration: 1000 })
-      } catch (error) {
-         console.log(error)
+      return
+   }
+   try {
+      const response = await axios.post("/gateway/login", { 'username': user.username, 'password': user.password }, { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } })
+      if (response.data.status == 200) {
+         Object.assign(user, response.data.dataList.userInfo)
+         sessionStorage.setItem('user', JSON.stringify(user))
+         sessionStorage.setItem("token", response.data.dataList.token)
+         router.push({ path: "/index" })
+         ElMessage.success({ message: '登录成功', duration: 1000 })
+         return;
       }
+      ElMessage.error({ message: '用户不存在或密码错误', duration: 1000 })
+   } catch (error) {
+      ElMessage.error({ message: '系统错误,请联系管理员', duration: 1000 })
    }
 }
 function clickStyle(el) {
@@ -179,7 +157,7 @@ function clickStyle(el) {
 }
 function getGithubToken() {
    loginLoading.value = true
-   axios.post("/github_oauth/login/oauth/access_token", github_oauth,).then(
+   axios.post("/github_oauth/login/oauth/access_token", github_oauth).then(
       response => {
          const str = response.data
          const startIndex = str.indexOf("access_token=") + "access_token=".length
@@ -196,46 +174,27 @@ function getGithubUser(token) {
       response => {
          loginLoading.value = false
          console.log("github用户-->" + response.data)
-         user.name = response.data.name
+         user.id = response.data.id
+         user.username = response.data.login
+         user.nickname = response.data.name
          user.bio = response.data.bio
          user.email = response.data.email
-         user.avatar_url = response.data.avatar_url
+         user.avatar = response.data.avatar_url
          getAccessToken()
       }).catch((error) => { console.log(error); })
 }
 async function getAccessToken() {//第三方登录时调用
-   const response = await axios.post("/gateway/getAccessToken", { username: user.name, password: user.password, bio: user.bio, email: user.email, avatarUrl: user.avatar_url })
-   user.token = response.data
-   localStorage.setItem('token', user.token)
-   localStorage.setItem('user', JSON.stringify(user))
-   router.push({ path: '/index', query: user })
+   const response = await axios.post("/gateway/getAccessToken", user)
+   sessionStorage.setItem('token', response.data.dataList)
+   sessionStorage.setItem('user', JSON.stringify(user))
+   router.push({ path: '/index' })
    ElMessage.success({ message: '登录成功', duration: 1000 })
-   getMyMedia(user.name)
-   console.log(myMedia)
 }
-function getMyMedia(username) {
-   axios.get('/rotation/api/media/getUserMediaByName?username=' + username, { headers: { Authorization: localStorage.getItem('token') } }).then(
-      response => {
-         myMedia.id = response.data.user.id
-         myMedia.avatarUrl = response.data.user.avatarUrl
-         myMedia.username = response.data.user.username
-         myMedia.email = response.data.user.email
-         myMedia.bio = response.data.user.bio
-         myMedia.medias = response.data.media
-         myMedia.collection = response.data.collection
-         myMedia.concern = response.data.concern
-         myMedia.fans = response.data.fans
-         localStorage.setItem('myMedia', JSON.stringify(myMedia))
-      })
-}
-
 
 
 /* 钩子 */
 onMounted(() => {
-   if (inject('removeToken') == 'remove')
-      user.token = ''
-   oauthLogin()
+   getOAuth2Code()
 })
 </script>
 
@@ -339,6 +298,7 @@ onMounted(() => {
    color: grey;
    margin-top: 4%;
    box-sizing: border-box;
+   animation: slide-in-bottom 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
    &:hover {
       border: 1px grey solid;
    }
@@ -360,6 +320,7 @@ onMounted(() => {
    width: 72%;
    height: 3%;
    margin-top: 3%;
+   animation: slide-in-bottom 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
    h4 {
       position: absolute;
       width: 15%;
@@ -384,10 +345,10 @@ onMounted(() => {
    box-sizing: border-box;
    margin-top: 3%;
    &:nth-child(10) {
-      animation: slide-in-bottom 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+      animation: slide-in-bottom 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
    }
    &:nth-child(11) {
-      animation: slide-in-bottom 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+      animation: slide-in-bottom 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
    }
    &:hover {
       box-shadow: inset 0 0 0 150px #0000001a;
@@ -430,6 +391,7 @@ onMounted(() => {
       font-size: 14px;
       text-align: center;
       margin-top: 3%;
+      animation: slide-in-bottom 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
    }
    .el-button {
       color: white;
@@ -441,6 +403,7 @@ onMounted(() => {
       width: 71.5%;
       height: 6.8%;
       margin-top: 3%;
+      animation: slide-in-bottom 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
       &:hover {
          box-shadow: inset 0 0 0 150px #0000001a;
       }
@@ -454,6 +417,7 @@ onMounted(() => {
       font-size: 17px;
       z-index: 1;
       transition: all 0.3s;
+      animation: slide-in-bottom 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
       &:hover {
          @name_hover();
       }
@@ -467,6 +431,7 @@ onMounted(() => {
       font-size: 17px;
       z-index: 1;
       transition: all 0.3s;
+      animation: slide-in-bottom 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
       &:hover {
          @word_hover();
       }

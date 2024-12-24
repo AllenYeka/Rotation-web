@@ -17,6 +17,9 @@ li {
 a {
     text-decoration: none;
     color: #10a37f;
+	&:hover{
+        cursor: pointer;
+    }
 }
 input {
     outline: none;
@@ -36,4 +39,25 @@ html, body, #app, .el-container {
    display: flex;
    justify-content: center;
    align-items: center;
+}
+
+
+/* ElementPlus的自定义样式 */
+.el-button--primary {
+   --el-button-bg-color: #10a37fed;
+   --el-button-border-color: #10a37fed;
+   --el-button-hover-bg-color: #1D9D7E;
+   --el-button-hover-border-color: #1D9D7E;
+   --el-button-active-bg-color: #10a37fed;
+   --el-button-active-border-color: #10a37fed;
+}
+.el-radio {
+   --el-radio-input-border-color-hover: #10a37e;
+   ::v-deep(.el-radio__input.is-checked + .el-radio__label) {
+      color: #10a37e;
+   }
+   ::v-deep(.el-radio__input.is-checked .el-radio__inner) {
+      background-color: #10a37e;
+      border-color: #10a37e;
+   }
 }

@@ -7,17 +7,14 @@ import router from './router/index.js'
 import axios from 'axios'
 import nProgress from 'nprogress'
 import 'nprogress/nprogress.css'
-
-
 axios.interceptors.request.use((request) => {//ajax请求拦截器
-    nProgress.start()
+    //nProgress.start()
     if (request.headers.Authorization == null || request.headers.Authorization == '')
-        request.headers.Authorization = localStorage.getItem('token')
-    console.log('ajax请求拦截器-->检查token: ' + request.headers.Authorization)
+        request.headers.Authorization = sessionStorage.getItem('token')
     return request
 })
-axios.interceptors.response.use((response) => {
-    nProgress.done()
+axios.interceptors.response.use((response) => {//响应拦截器
+    //nProgress.done()
     return response
 })
 const app = createApp(App)
